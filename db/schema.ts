@@ -76,6 +76,7 @@ export const jobs = pgTable("jobs", {
   bookingLinkId: uuid("booking_link_id"),
   recurringIntervalMonths: integer("recurring_interval_months"),
   parentJobId: uuid("parent_job_id"),
+  rescheduleToken: varchar("reschedule_token", { length: 50 }).unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -96,6 +97,18 @@ export const bookingLinks = pgTable("booking_links", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const jobTemplates = pgTable("job_templates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  jobCategory: varchar("job_category", { length: 50 }).notNull(),
+  titleTemplate: varchar("title_template", { length: 255 }).notNull(),
+  description: text("description"),
+  recurringIntervalMonths: integer("recurring_interval_months"),
+  estimatedMinutes: integer("estimated_minutes"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type Property = typeof properties.$inferSelect;
 export type Technician = typeof technicians.$inferSelect;
@@ -105,3 +118,5 @@ export type NewJob = typeof jobs.$inferInsert;
 export type NewProperty = typeof properties.$inferInsert;
 export type NewTechnician = typeof technicians.$inferInsert;
 export type NewBookingLink = typeof bookingLinks.$inferInsert;
+export type JobTemplate = typeof jobTemplates.$inferSelect;
+export type NewJobTemplate = typeof jobTemplates.$inferInsert;

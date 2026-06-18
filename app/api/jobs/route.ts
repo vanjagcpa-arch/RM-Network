@@ -4,6 +4,7 @@ import { jobs, properties, technicians } from "@/db/schema";
 import { getSession } from "@/lib/auth";
 import { desc, eq } from "drizzle-orm";
 import { sendJobConfirmationEmail } from "@/lib/email";
+import { nanoid } from "nanoid";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -65,6 +66,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "propertyId, jobCategory, and title required" }, { status: 400 });
   }
 
+  const rescheduleToken = tenantEmail ? nanoid(21) : null;
+
   const [job] = await db
     .insert(jobs)
     .values({
@@ -74,6 +77,7 @@ export async function POST(req: NextRequest) {
       tenantName, tenantEmail, tenantPhone, unitNumber, notes,
       technicianId: technicianId || null,
       recurringIntervalMonths: recurringIntervalMonths || null,
+      rescheduleToken,
     })
     .returning();
 

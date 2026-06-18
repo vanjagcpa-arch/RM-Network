@@ -4,6 +4,7 @@ import { jobs, properties } from "@/db/schema";
 import { getSession } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { sendJobConfirmationEmail } from "@/lib/email";
+import { nanoid } from "nanoid";
 
 function addMonthsToDateStr(dateStr: string, months: number): string {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -70,10 +71,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     updated.tenantEmail &&
     updated.scheduledDate
   ) {
+    // Ensure reschedule token exists
+    let rescheduleToken = updated.rescheduleToken;
+    if (!rescheduleToken) {
+      rescheduleToken = nanoid(21);
+      await db.update(jobs).set({ rescheduleToken }).where(eq(jobs.id, id));
+    }
     const [property] = await db.select().from(properties).where(eq(properties.id, updated.propertyId)).limit(1);
     if (property) {
       sendJobConfirmationEmail(
-        { ...updated, tenantEmail: updated.tenantEmail, scheduledDate: updated.scheduledDate },
+        { ...updated, tenantEmail: updated.tenantEmail, scheduledDate: updated.scheduledDate, rescheduleToken },
         property
       ).catch(console.error);
     }
