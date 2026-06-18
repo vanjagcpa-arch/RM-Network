@@ -46,13 +46,13 @@ body {
 
 /* Selection */
 ::selection {
-  background: #bfdbfe;
-  color: #1e3a5f;
+  background: #ede9fe;
+  color: #4c1d95;
 }
 
 /* Focus ring */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #7c3aed;
   outline-offset: 2px;
 }
 

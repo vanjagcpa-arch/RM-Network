@@ -204,7 +204,7 @@ export default function TechniciansPage() {
                 {tech.notes && <p className="text-xs text-slate-400 mb-3 line-clamp-2">{tech.notes}</p>}
 
                 <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-                  <button onClick={() => openEdit(tech)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 transition-colors">
+                  <button onClick={() => openEdit(tech)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-violet-600 transition-colors">
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
                   <button onClick={() => toggleActive(tech)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition-colors ml-auto">
@@ -276,7 +276,7 @@ export default function TechniciansPage() {
             <div>
               <Label>Notes</Label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} placeholder="Any notes about this technician…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
             </div>
 
             <div className="flex justify-end gap-2 pt-1">

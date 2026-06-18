@@ -139,7 +139,7 @@ export default function TemplatesPage() {
                   ) : null}
                 </div>
                 <div className="flex items-center gap-2 pt-3 mt-3 border-t border-slate-100">
-                  <button onClick={() => openEdit(t)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 transition-colors">
+                  <button onClick={() => openEdit(t)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-violet-600 transition-colors">
                     <Pencil className="h-3.5 w-3.5" /> Edit
                   </button>
                   <button onClick={() => handleDelete(t.id)} className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 transition-colors ml-auto">
@@ -165,7 +165,7 @@ export default function TemplatesPage() {
             <div>
               <Label>Job type *</Label>
               <select required value={form.jobCategory} onChange={(e) => setForm({ ...form, jobCategory: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 <option value="">Select…</option>
                 {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
               </select>
@@ -179,13 +179,13 @@ export default function TemplatesPage() {
             <div>
               <Label>Description</Label>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2}
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Recurring every</Label>
                 <select value={form.recurringIntervalMonths} onChange={(e) => setForm({ ...form, recurringIntervalMonths: Number(e.target.value) })}
-                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                   <option value={0}>Not recurring</option>
                   <option value={1}>1 month</option>
                   <option value={3}>3 months</option>
@@ -197,7 +197,7 @@ export default function TemplatesPage() {
               <div>
                 <Label>Est. duration</Label>
                 <select value={form.estimatedMinutes} onChange={(e) => setForm({ ...form, estimatedMinutes: Number(e.target.value) })}
-                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                   {DURATION_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
               </div>
@@ -205,7 +205,7 @@ export default function TemplatesPage() {
             <div>
               <Label>Notes</Label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2}
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button type="button" variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>

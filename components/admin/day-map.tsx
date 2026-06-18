@@ -184,7 +184,7 @@ export function DayMap({ jobs }: { jobs: MapJob[] }) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-52 gap-2">
-        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+        <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
         <p className="text-xs text-slate-400">Locating addresses on the map…</p>
         <p className="text-[10px] text-slate-300">First visit may take a few seconds</p>
       </div>
