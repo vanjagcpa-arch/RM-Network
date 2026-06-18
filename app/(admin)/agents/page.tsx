@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, UserPlus, Pencil, Trash2, Building2, X, Check } from "lucide-react";
+import { Loader2, UserPlus, Pencil, Trash2, Building2, X, Check, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { AgentPortalPreview, type AgentForPreview } from "@/components/admin/agent-portal-preview";
 
 interface Agent {
   id: string;
@@ -204,6 +205,8 @@ export default function AgentsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<AgentDetail | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [previewing, setPreviewing] = useState<AgentForPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
@@ -218,6 +221,17 @@ export default function AgentsPage() {
     const res = await fetch(`/api/admin/agents/${agent.id}`);
     const data = await res.json();
     setEditing(data);
+  }
+
+  async function openPreview(agent: Agent) {
+    setPreviewLoading(agent.id);
+    try {
+      const res = await fetch(`/api/admin/agents/${agent.id}`);
+      const data: AgentForPreview = await res.json();
+      setPreviewing(data);
+    } finally {
+      setPreviewLoading(null);
+    }
   }
 
   async function deleteAgent(id: string) {
@@ -287,6 +301,14 @@ export default function AgentsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => openPreview(a)}
+                        disabled={previewLoading === a.id}
+                        title="View agent portal"
+                        className="p-1.5 rounded-lg hover:bg-[#ECFDE8] text-slate-400 hover:text-[#16A34A] transition-colors disabled:opacity-50"
+                      >
+                        {previewLoading === a.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Eye className="h-3.5 w-3.5" />}
+                      </button>
                       <button onClick={() => startEdit(a)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors">
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -312,6 +334,10 @@ export default function AgentsPage() {
           onClose={() => { setShowForm(false); setEditing(null); }}
           onDone={() => { setShowForm(false); setEditing(null); load(); }}
         />
+      )}
+
+      {previewing && (
+        <AgentPortalPreview agent={previewing} onClose={() => setPreviewing(null)} />
       )}
     </div>
   );

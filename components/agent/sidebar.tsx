@@ -11,7 +11,7 @@ const navItems = [
   { href: "/agent/requests", label: "Maintenance Requests", icon: ClipboardList },
 ];
 
-export function AgentSidebar() {
+export function AgentSidebar({ agencyName }: { agencyName?: string }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,13 +24,17 @@ export function AgentSidebar() {
   return (
     <aside className="flex h-full w-60 flex-col bg-white border-r border-slate-200">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-100">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 shadow-sm flex-shrink-0">
-          <Wrench className="h-4 w-4 text-white" />
-        </div>
-        <div>
-          <p className="text-sm font-bold tracking-tight text-slate-900">Agent Portal</p>
-          <p className="text-[10px] text-slate-400 leading-none mt-0.5">Maintenance Requests</p>
+      <div className="px-4 py-4 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 shadow-sm flex-shrink-0">
+            <Wrench className="h-4 w-4 text-white" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xl font-cabinet text-slate-900 leading-none">RM Network</p>
+            {agencyName && (
+              <p className="text-[11px] text-slate-400 leading-none mt-1.5 pl-3">+ {agencyName}</p>
+            )}
+          </div>
         </div>
       </div>
 
