@@ -16,6 +16,8 @@ interface LinkInfo {
   jobCategory: string | null;
   label: string | null;
   allowedWeekdays: number[] | null;
+  allowedTimeStart: string | null;
+  allowedTimeEnd: string | null;
 }
 
 interface Recommendation {
@@ -243,7 +245,19 @@ export default function BookingPage() {
 
             <div>
               <Label>Preferred time (optional)</Label>
-              <Input type="time" value={form.scheduledTimeStart} onChange={(e) => setForm((f) => ({ ...f, scheduledTimeStart: e.target.value }))} className="mt-1 w-40" />
+              {linkInfo?.allowedTimeStart && linkInfo.allowedTimeEnd && (
+                <p className="text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-1.5 mt-1 mb-1.5">
+                  Available times: <strong>{new Date(`2000-01-01T${linkInfo.allowedTimeStart}`).toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" })}</strong> – <strong>{new Date(`2000-01-01T${linkInfo.allowedTimeEnd}`).toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" })}</strong>
+                </p>
+              )}
+              <Input
+                type="time"
+                value={form.scheduledTimeStart}
+                onChange={(e) => setForm((f) => ({ ...f, scheduledTimeStart: e.target.value }))}
+                min={linkInfo?.allowedTimeStart ?? undefined}
+                max={linkInfo?.allowedTimeEnd ?? undefined}
+                className="mt-1 w-40"
+              />
             </div>
           </div>
 

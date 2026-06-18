@@ -3,7 +3,7 @@ import { verifySession } from "./lib/auth";
 
 const SESSION_COOKIE = "rm_session";
 
-const protectedPrefixes = ["/dashboard", "/properties", "/jobs", "/calendar", "/links", "/settings", "/technicians", "/buildings", "/compliance", "/templates"];
+const protectedPrefixes = ["/dashboard", "/properties", "/jobs", "/calendar", "/links", "/settings", "/technicians", "/buildings", "/compliance", "/templates", "/agent", "/maintenance-requests", "/agents"];
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -27,5 +27,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/properties/:path*", "/jobs/:path*", "/calendar/:path*", "/links/:path*", "/settings/:path*", "/technicians/:path*", "/buildings/:path*", "/compliance/:path*", "/templates/:path*"],
+  matcher: ["/dashboard/:path*", "/properties/:path*", "/jobs/:path*", "/calendar/:path*", "/links/:path*", "/settings/:path*", "/technicians/:path*", "/buildings/:path*", "/compliance/:path*", "/templates/:path*", "/agent/:path*", "/agent", "/maintenance-requests/:path*", "/agents/:path*"],
 };

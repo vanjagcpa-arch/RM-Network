@@ -43,6 +43,19 @@ export async function requireSession(): Promise<SessionPayload> {
   return session;
 }
 
+export async function requireAdminSession(): Promise<SessionPayload> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  if (session.role && session.role !== "admin") redirect("/agent");
+  return session;
+}
+
+export async function requireAgentSession(): Promise<SessionPayload> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  return session;
+}
+
 export const SESSION_COOKIE_NAME = SESSION_COOKIE;
 export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,

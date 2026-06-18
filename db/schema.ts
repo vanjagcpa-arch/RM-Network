@@ -13,6 +13,9 @@ export const adminUsers = pgTable("admin_users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
+  role: text("role").notNull().default("admin"), // admin | agent
+  phone: varchar("phone", { length: 20 }),
+  agencyName: varchar("agency_name", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -106,6 +109,8 @@ export const bookingLinks = pgTable("booking_links", {
   maxBookings: integer("max_bookings").default(0),
   currentBookings: integer("current_bookings").notNull().default(0),
   allowedWeekdays: text("allowed_weekdays"),
+  allowedTimeStart: varchar("allowed_time_start", { length: 10 }),
+  allowedTimeEnd: varchar("allowed_time_end", { length: 10 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -121,6 +126,44 @@ export const jobTemplates = pgTable("job_templates", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const agentPropertyLinks = pgTable("agent_property_links", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  agentId: uuid("agent_id")
+    .notNull()
+    .references(() => adminUsers.id, { onDelete: "cascade" }),
+  propertyId: uuid("property_id")
+    .notNull()
+    .references(() => properties.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const maintenanceRequests = pgTable("maintenance_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  agentId: uuid("agent_id")
+    .notNull()
+    .references(() => adminUsers.id),
+  propertyId: uuid("property_id")
+    .notNull()
+    .references(() => properties.id),
+  tenantName: varchar("tenant_name", { length: 255 }),
+  tenantEmail: varchar("tenant_email", { length: 255 }),
+  tenantPhone: varchar("tenant_phone", { length: 20 }),
+  unitNumber: varchar("unit_number", { length: 20 }),
+  jobCategory: varchar("job_category", { length: 50 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  // pending | sent | booked | rejected
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  allowedWeekdays: text("allowed_weekdays"),
+  allowedTimeStart: varchar("allowed_time_start", { length: 10 }),
+  allowedTimeEnd: varchar("allowed_time_end", { length: 10 }),
+  bookingLinkId: uuid("booking_link_id").references(() => bookingLinks.id),
+  rejectionReason: text("rejection_reason"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type Building = typeof buildings.$inferSelect;
 export type NewBuilding = typeof buildings.$inferInsert;
@@ -129,8 +172,11 @@ export type Technician = typeof technicians.$inferSelect;
 export type Job = typeof jobs.$inferSelect;
 export type BookingLink = typeof bookingLinks.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
-export type NewProperty = typeof properties.$inferInsert;
+export type NewProperty = typeof properties.$inferSelect;
 export type NewTechnician = typeof technicians.$inferInsert;
 export type NewBookingLink = typeof bookingLinks.$inferInsert;
 export type JobTemplate = typeof jobTemplates.$inferSelect;
 export type NewJobTemplate = typeof jobTemplates.$inferInsert;
+export type AgentPropertyLink = typeof agentPropertyLinks.$inferSelect;
+export type MaintenanceRequest = typeof maintenanceRequests.$inferSelect;
+export type NewMaintenanceRequest = typeof maintenanceRequests.$inferInsert;
