@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { jobs, properties, technicians } from "@/db/schema";
 import { getSession } from "@/lib/auth";
 import { desc, eq } from "drizzle-orm";
+import { sendJobConfirmationEmail } from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { propertyId, jobCategory, title, description, status, scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes, technicianId } = body;
+  const { propertyId, jobCategory, title, description, status, scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes, technicianId, recurringIntervalMonths } = body;
 
   if (!propertyId || !jobCategory || !title) {
     return NextResponse.json({ error: "propertyId, jobCategory, and title required" }, { status: 400 });
@@ -66,8 +67,26 @@ export async function POST(req: NextRequest) {
 
   const [job] = await db
     .insert(jobs)
-    .values({ propertyId, jobCategory, title, description, status: status ?? "pending", scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes, technicianId: technicianId || null })
+    .values({
+      propertyId, jobCategory, title, description,
+      status: status ?? "pending",
+      scheduledDate, scheduledTimeStart, scheduledTimeEnd,
+      tenantName, tenantEmail, tenantPhone, unitNumber, notes,
+      technicianId: technicianId || null,
+      recurringIntervalMonths: recurringIntervalMonths || null,
+    })
     .returning();
+
+  // Send confirmation email if created as confirmed with tenant email + date
+  if (job.status === "confirmed" && job.tenantEmail && job.scheduledDate) {
+    const [property] = await db.select().from(properties).where(eq(properties.id, propertyId)).limit(1);
+    if (property) {
+      sendJobConfirmationEmail(
+        { ...job, tenantEmail: job.tenantEmail, scheduledDate: job.scheduledDate },
+        property
+      ).catch(console.error);
+    }
+  }
 
   return NextResponse.json(job, { status: 201 });
 }

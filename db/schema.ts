@@ -74,6 +74,8 @@ export const jobs = pgTable("jobs", {
   ascoraJobId: varchar("ascora_job_id", { length: 50 }),
   ascoraExportedAt: timestamp("ascora_exported_at"),
   bookingLinkId: uuid("booking_link_id"),
+  recurringIntervalMonths: integer("recurring_interval_months"),
+  parentJobId: uuid("parent_job_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

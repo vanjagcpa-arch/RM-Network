@@ -49,6 +49,13 @@ export const JOB_STATUSES = {
 export type JobCategory = keyof typeof JOB_CATEGORIES;
 export type JobStatus = keyof typeof JOB_STATUSES;
 
+export const COMPLIANCE_INTERVALS: Partial<Record<JobCategory, number>> = {
+  smoke_alarm: 12,
+  test_and_tag: 12,
+  gas_appliance: 12,
+  electrical: 24,
+};
+
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "Not scheduled";
   const [year, month, day] = dateStr.split("-").map(Number);

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { JOB_CATEGORIES } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, Sparkles, Calendar, RefreshCw } from "lucide-react";
 import { Suspense } from "react";
 
 interface Property {
@@ -58,6 +58,8 @@ function NewJobForm() {
     notes: "",
     status: "pending",
     technicianId: "",
+    isRecurring: false,
+    recurringIntervalMonths: 12,
   });
 
   useEffect(() => {
@@ -88,10 +90,11 @@ function NewJobForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    const { isRecurring, ...rest } = form;
     const res = await fetch("/api/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...rest, recurringIntervalMonths: isRecurring ? form.recurringIntervalMonths : null }),
     });
     if (res.ok) router.push("/jobs");
     else setSaving(false);
@@ -219,6 +222,37 @@ function NewJobForm() {
               <Input type="time" value={form.scheduledTimeEnd} onChange={(e) => setForm({ ...form, scheduledTimeEnd: e.target.value })} className="mt-1" />
             </div>
           </div>
+        </div>
+
+        {/* Recurring schedule */}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 text-blue-600" />
+              <h2 className="text-sm font-semibold text-slate-900">Recurring schedule</h2>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={form.isRecurring}
+                onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
+                className="h-4 w-4 rounded border-slate-300 text-blue-600" />
+              <span className="text-sm text-slate-600">Enable</span>
+            </label>
+          </div>
+          {form.isRecurring && (
+            <div>
+              <Label>Repeat every</Label>
+              <select value={form.recurringIntervalMonths}
+                onChange={(e) => setForm({ ...form, recurringIntervalMonths: Number(e.target.value) })}
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value={1}>1 month</option>
+                <option value={3}>3 months</option>
+                <option value={6}>6 months</option>
+                <option value={12}>12 months (annual)</option>
+                <option value={24}>24 months (biennial)</option>
+              </select>
+              <p className="text-xs text-slate-400 mt-1.5">A new pending job is automatically created when this one is marked complete.</p>
+            </div>
+          )}
         </div>
 
         {/* Tenant details */}

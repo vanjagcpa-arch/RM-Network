@@ -14,6 +14,7 @@ import {
   Wrench,
   ChevronRight,
   HardHat,
+  ShieldCheck,
 } from "lucide-react";
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/jobs", label: "Jobs", icon: ClipboardList },
   { href: "/properties", label: "Properties", icon: Building2 },
   { href: "/technicians", label: "Technicians", icon: HardHat },
+  { href: "/compliance", label: "Compliance", icon: ShieldCheck },
   { href: "/links", label: "Booking Links", icon: Link2 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
