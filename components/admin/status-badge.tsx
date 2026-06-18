@@ -1,14 +1,9 @@
-import { JOB_STATUSES, type JobStatus } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { JOB_STATUSES, JOB_STATUS_CHIP_COLOR, type JobStatus } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 
 export function StatusBadge({ status, className }: { status: string; className?: string }) {
-  const config = JOB_STATUSES[status as JobStatus] ?? {
-    label: status,
-    color: "bg-slate-100 text-slate-600",
-  };
-  return (
-    <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium", config.color, className)}>
-      {config.label}
-    </span>
-  );
+  const config = JOB_STATUSES[status as JobStatus];
+  const label = config?.label ?? status;
+  const color = JOB_STATUS_CHIP_COLOR[status] ?? "slate";
+  return <Chip label={label} color={color} className={className} />;
 }

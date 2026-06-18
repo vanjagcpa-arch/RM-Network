@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Building2, MapPin, Plus, X, Loader2, ChevronLeft, Send, Clock, CheckCircle2, XCircle } from "lucide-react";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, REQUEST_STATUS_CHIP } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,12 +29,6 @@ interface Request {
   rejectionReason: string | null;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
-  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
-  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
-};
 
 const EMPTY_FORM = {
   jobCategory: "",
@@ -134,7 +129,7 @@ export default function AgentPropertyDetailPage() {
               <Building2 className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">{property.name}</h1>
+              <h1 className="text-xl font-bold text-slate-900 font-cabinet">{property.name}</h1>
               {property.buildingName && (
                 <p className="text-sm text-slate-400">{property.buildingName}</p>
               )}
@@ -324,15 +319,13 @@ export default function AgentPropertyDetailPage() {
         ) : (
           <div className="divide-y divide-slate-50">
             {requests.map((r) => {
-              const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
+              const s = REQUEST_STATUS_CHIP[r.status] ?? REQUEST_STATUS_CHIP.pending;
               const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
               return (
                 <div key={r.id} className="px-5 py-4">
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <p className="text-sm font-semibold text-slate-900">{r.title}</p>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
-                      {s.label}
-                    </span>
+                    <Chip label={s.label} color={s.color} className="flex-shrink-0" />
                   </div>
                   <p className="text-xs text-slate-500">
                     {cat?.label ?? r.jobCategory}

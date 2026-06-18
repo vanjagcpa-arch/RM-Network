@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, ClipboardList, Send, Clock, CheckCircle2, XCircle, MessageCircle } from "lucide-react";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, REQUEST_STATUS_CHIP } from "@/lib/utils";
+import { Chip, FilterChip } from "@/components/ui/chip";
 
 interface Request {
   id: string;
@@ -27,19 +28,12 @@ interface Comment {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
-  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
-  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
-};
-
 const ALL_STATUSES = [
   { value: "", label: "All requests" },
-  { value: "pending", label: "Awaiting review", icon: Clock },
-  { value: "sent", label: "Booking link sent", icon: Send },
-  { value: "booked", label: "Booked", icon: CheckCircle2 },
-  { value: "rejected", label: "Not approved", icon: XCircle },
+  { value: "pending", label: "Awaiting review" },
+  { value: "sent", label: "Booking link sent" },
+  { value: "booked", label: "Booked by tenant" },
+  { value: "rejected", label: "Not approved" },
 ];
 
 function getInitials(name: string) {
@@ -82,9 +76,9 @@ function CommentsPanel({ requestId }: { requestId: string }) {
     setSending(false);
   }
 
-  const roleColor: Record<string, string> = {
-    admin: "bg-blue-100 text-blue-700",
-    agent: "bg-emerald-100 text-emerald-700",
+  const roleChipColor: Record<string, import("@/components/ui/chip").ChipColor> = {
+    admin: "blue",
+    agent: "emerald",
   };
 
   return (
@@ -107,9 +101,7 @@ function CommentsPanel({ requestId }: { requestId: string }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                   <span className="text-xs font-semibold text-slate-800">{c.authorName}</span>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${roleColor[c.authorRole] ?? "bg-slate-100 text-slate-600"}`}>
-                    {c.authorRole}
-                  </span>
+                  <Chip label={c.authorRole} color={roleChipColor[c.authorRole] ?? "slate"} className="px-2 py-0.5 text-[10px]" />
                   <span className="text-[10px] text-slate-400">
                     {new Date(c.createdAt).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </span>
@@ -162,26 +154,32 @@ export default function AgentRequestsPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Maintenance Requests</h1>
+        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Maintenance Requests</h1>
         <p className="text-slate-500 text-sm mt-1">All requests you have submitted across your properties</p>
       </div>
 
       {/* Filter tabs */}
       <div className="flex gap-2 mb-5 flex-wrap">
-        {ALL_STATUSES.map(({ value, label }) => (
-          <button
-            key={value}
-            onClick={() => setFilter(value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filter === value ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
-          >
-            {label}
-            {value && (
-              <span className="ml-1.5 opacity-60">
-                {requests.filter((r) => r.status === value).length}
-              </span>
-            )}
-          </button>
-        ))}
+        <FilterChip
+          label="All requests"
+          color="slate"
+          selected={filter === ""}
+          count={requests.length}
+          onClick={() => setFilter("")}
+        />
+        {(["pending", "sent", "booked", "rejected"] as const).map((val) => {
+          const chip = REQUEST_STATUS_CHIP[val];
+          return (
+            <FilterChip
+              key={val}
+              label={chip.label}
+              color={chip.color}
+              selected={filter === val}
+              count={requests.filter((r) => r.status === val).length}
+              onClick={() => setFilter(val)}
+            />
+          );
+        })}
       </div>
 
       {loading ? (
@@ -200,7 +198,7 @@ export default function AgentRequestsPage() {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="divide-y divide-slate-50">
             {filtered.map((r) => {
-              const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
+              const s = REQUEST_STATUS_CHIP[r.status] ?? REQUEST_STATUS_CHIP.pending;
               const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
               const commentsOpen = expandedComments === r.id;
 
@@ -230,9 +228,7 @@ export default function AgentRequestsPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${s.color}`}>
-                          {s.label}
-                        </span>
+                        <Chip label={s.label} color={s.color} />
                         <button
                           onClick={() => setExpandedComments(commentsOpen ? null : r.id)}
                           className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition-colors ${commentsOpen ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"}`}

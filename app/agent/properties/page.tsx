@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Building2, ChevronRight, MapPin, Loader2 } from "lucide-react";
+import { Chip } from "@/components/ui/chip";
 
 interface Property {
   id: string;
@@ -27,7 +28,7 @@ export default function AgentPropertiesPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">My Properties</h1>
+        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">My Properties</h1>
         <p className="text-slate-500 text-sm mt-1">Properties assigned to you. Click any to submit a maintenance request.</p>
       </div>
 
@@ -66,9 +67,7 @@ export default function AgentPropertiesPage() {
               </div>
               <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                 {p.pendingRequests > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                    {p.pendingRequests} pending
-                  </span>
+                  <Chip label={`${p.pendingRequests} pending`} color="amber" />
                 )}
                 <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-emerald-500 transition-colors" />
               </div>

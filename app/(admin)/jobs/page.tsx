@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
-import { formatDate, formatTime, JOB_STATUSES, JOB_CATEGORIES } from "@/lib/utils";
+import { formatDate, formatTime, JOB_STATUSES, JOB_CATEGORIES, JOB_STATUS_CHIP_COLOR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus, Search, ClipboardList, Calendar, Building2, Loader2, Download, ExternalLink, HardHat } from "lucide-react";
+import { FilterChip, Chip } from "@/components/ui/chip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -107,7 +108,7 @@ export default function JobsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Jobs</h1>
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Jobs</h1>
           <p className="text-slate-500 text-sm mt-0.5">{filtered.length} of {jobs.length} jobs</p>
         </div>
         <div className="flex items-center gap-2">
@@ -125,22 +126,22 @@ export default function JobsPage() {
 
       {/* Status pill tabs */}
       <div className="flex flex-wrap items-center gap-1.5 mb-4">
-        <button
+        <FilterChip
+          label="All"
+          color="slate"
+          selected={filterStatus === ""}
+          count={jobs.length}
           onClick={() => setFilterStatus("")}
-          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterStatus === "" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
-        >
-          All <span className="ml-1 opacity-60">{jobs.length}</span>
-        </button>
-        {Object.entries(JOB_STATUSES).map(([k, v]) => (
-          <button
+        />
+        {Object.entries(JOB_STATUSES).map(([k]) => (
+          <FilterChip
             key={k}
+            label={JOB_STATUSES[k as keyof typeof JOB_STATUSES].label}
+            color={(JOB_STATUS_CHIP_COLOR[k] ?? "slate") as import("@/components/ui/chip").ChipColor}
+            selected={filterStatus === k}
+            count={counts[k]}
             onClick={() => setFilterStatus(filterStatus === k ? "" : k)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${filterStatus === k ? v.color : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
-          >
-            <span className={`h-1.5 w-1.5 rounded-full ${v.dot}`} />
-            {v.label}
-            {counts[k] > 0 && <span className="opacity-60">{counts[k]}</span>}
-          </button>
+          />
         ))}
       </div>
 
@@ -188,7 +189,7 @@ export default function JobsPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-semibold text-slate-900 truncate">{job.title}</p>
                       {isOverdue && (
-                        <span className="flex-shrink-0 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">Overdue</span>
+                        <Chip label="Overdue" color="red" className="flex-shrink-0" />
                       )}
                     </div>
                     <div className="flex items-center flex-wrap gap-3 text-xs text-slate-400">
@@ -204,8 +205,8 @@ export default function JobsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {job.technician && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5 text-white" style={{ backgroundColor: job.technician.color }}>
-                        <HardHat className="h-3 w-3" />{job.technician.name.split(" ")[0]}
+                      <span className="inline-flex items-center gap-1 text-sm font-semibold rounded-full border px-3 py-1 text-white" style={{ backgroundColor: job.technician.color, borderColor: job.technician.color }}>
+                        <HardHat className="h-3.5 w-3.5" />{job.technician.name.split(" ")[0]}
                       </span>
                     )}
                     <JobCategoryBadge category={job.jobCategory} />

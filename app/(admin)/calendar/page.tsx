@@ -85,7 +85,7 @@ export default function CalendarPage() {
       {/* Calendar */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">{MONTH_NAMES[month]} {year}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">{MONTH_NAMES[month]} {year}</h1>
           <div className="flex items-center gap-2">
             {loading && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
             <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-slate-100 transition-colors">

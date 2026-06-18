@@ -26,7 +26,7 @@ export default function SettingsPage() {
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Settings</h1>
         <p className="text-slate-500 text-sm mt-0.5">Configure integrations and app settings</p>
       </div>
 
@@ -93,7 +93,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-3">
             <Key className="h-4 w-4 text-slate-500" />
             <h3 className="text-sm font-semibold text-slate-900">Ascora API Integration</h3>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">Coming soon</span>
+            <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">Coming soon</span>
           </div>
           <p className="text-sm text-slate-500 mb-3">Direct API integration will automatically sync jobs to Ascora when configured.</p>
           <div>

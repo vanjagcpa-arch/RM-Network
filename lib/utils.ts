@@ -74,6 +74,31 @@ export const JOB_STATUSES = {
 export type JobCategory = keyof typeof JOB_CATEGORIES;
 export type JobStatus = keyof typeof JOB_STATUSES;
 
+export type ChipColor = "amber" | "blue" | "emerald" | "green" | "red" | "orange" | "purple" | "slate";
+
+export const JOB_STATUS_CHIP_COLOR: Record<string, ChipColor> = {
+  pending:     "amber",
+  confirmed:   "blue",
+  in_progress: "purple",
+  completed:   "emerald",
+  cancelled:   "slate",
+};
+
+export const JOB_CATEGORY_CHIP_COLOR: Record<string, ChipColor> = {
+  smoke_alarm:   "red",
+  test_and_tag:  "blue",
+  electrical:    "amber",
+  gas_appliance: "orange",
+  maintenance:   "slate",
+};
+
+export const REQUEST_STATUS_CHIP: Record<string, { label: string; color: ChipColor }> = {
+  pending:  { label: "Awaiting review",   color: "amber" },
+  sent:     { label: "Booking link sent", color: "blue" },
+  booked:   { label: "Booked by tenant",  color: "emerald" },
+  rejected: { label: "Not approved",      color: "red" },
+};
+
 export const COMPLIANCE_INTERVALS: Partial<Record<JobCategory, number>> = {
   smoke_alarm: 12,
   test_and_tag: 12,

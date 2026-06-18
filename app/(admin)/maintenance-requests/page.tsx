@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Loader2, Check, X, Clock, Send, CheckCircle2, XCircle, ChevronDown, MessageCircle } from "lucide-react";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, REQUEST_STATUS_CHIP } from "@/lib/utils";
+import { Chip, FilterChip } from "@/components/ui/chip";
 
 interface Request {
   id: string;
@@ -33,12 +34,6 @@ interface Comment {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
-  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
-  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
-};
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -82,9 +77,9 @@ function CommentsPanel({ requestId }: { requestId: string }) {
     setSending(false);
   }
 
-  const roleColor: Record<string, string> = {
-    admin: "bg-blue-100 text-blue-700",
-    agent: "bg-emerald-100 text-emerald-700",
+  const roleChipColor: Record<string, import("@/components/ui/chip").ChipColor> = {
+    admin: "blue",
+    agent: "emerald",
   };
 
   return (
@@ -107,9 +102,7 @@ function CommentsPanel({ requestId }: { requestId: string }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                   <span className="text-xs font-semibold text-slate-800">{c.authorName}</span>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${roleColor[c.authorRole] ?? "bg-slate-100 text-slate-600"}`}>
-                    {c.authorRole}
-                  </span>
+                  <Chip label={c.authorRole} color={roleChipColor[c.authorRole] ?? "slate"} className="px-2 py-0.5 text-[10px]" />
                   <span className="text-[10px] text-slate-400">
                     {new Date(c.createdAt).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </span>
@@ -417,36 +410,36 @@ export default function MaintenanceRequestsPage() {
     <div className="p-8 pb-32">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Maintenance Requests</h1>
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Maintenance Requests</h1>
           <p className="text-slate-500 text-sm mt-1">Review and approve requests submitted by your agents</p>
         </div>
         {pendingCount > 0 && (
-          <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
-            <span className="h-2 w-2 rounded-full bg-amber-400 mr-1.5" />
-            {pendingCount} pending review
-          </span>
+          <Chip label={`${pendingCount} pending review`} color="amber" />
         )}
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-2 mb-5">
-        {[
-          { value: "pending", label: "Pending", icon: Clock },
-          { value: "sent", label: "Sent to tenant", icon: Send },
-          { value: "booked", label: "Booked", icon: CheckCircle2 },
-          { value: "rejected", label: "Rejected", icon: XCircle },
-          { value: "", label: "All" },
-        ].map(({ value, label, icon: Icon }) => (
-          <button
-            key={value}
-            onClick={() => setFilter(value)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filter === value ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
-          >
-            {Icon && <Icon className="h-3 w-3" />}
-            {label}
-            <span className="opacity-60 ml-0.5">{requests.filter((r) => value ? r.status === value : true).length}</span>
-          </button>
-        ))}
+      <div className="flex gap-2 mb-5 flex-wrap">
+        <FilterChip
+          label="All"
+          color="slate"
+          selected={filter === ""}
+          count={requests.length}
+          onClick={() => setFilter("")}
+        />
+        {(["pending", "sent", "booked", "rejected"] as const).map((val) => {
+          const chip = REQUEST_STATUS_CHIP[val];
+          return (
+            <FilterChip
+              key={val}
+              label={chip.label}
+              color={chip.color}
+              selected={filter === val}
+              count={requests.filter((r) => r.status === val).length}
+              onClick={() => setFilter(val)}
+            />
+          );
+        })}
       </div>
 
       {loading ? (
@@ -473,7 +466,7 @@ export default function MaintenanceRequestsPage() {
           )}
 
           {filtered.map((r) => {
-            const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
+            const s = REQUEST_STATUS_CHIP[r.status] ?? REQUEST_STATUS_CHIP.pending;
             const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
             const isOpen = expanded === r.id;
             const commentsOpen = expandedComments === r.id;
@@ -503,9 +496,7 @@ export default function MaintenanceRequestsPage() {
                   >
                     <div className="flex items-start gap-3 mb-1">
                       <p className="font-semibold text-slate-900 text-sm">{r.title}</p>
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
-                        {s.label}
-                      </span>
+                      <Chip label={s.label} color={s.color} className="flex-shrink-0" />
                     </div>
                     <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
                       <span className="font-medium text-slate-700">{r.propertyName}</span>

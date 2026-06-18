@@ -6,6 +6,7 @@ import { requireSession } from "@/lib/auth";
 import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { formatDate, formatTime } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Phone, Mail, ClipboardList, Link2, Plus, Calendar } from "lucide-react";
 import { PropertyActions } from "./property-actions";
@@ -122,9 +123,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                       <p className="text-sm font-medium text-slate-900">{link.label || "Booking link"}</p>
                       <p className="text-xs text-slate-400 font-mono truncate mt-0.5">{`/book/${link.token}`}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${link.isActive ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>
-                      {link.isActive ? "Active" : "Inactive"}
-                    </span>
+                    <Chip label={link.isActive ? "Active" : "Inactive"} color={link.isActive ? "green" : "slate"} />
                   </div>
                 ))}
               </div>

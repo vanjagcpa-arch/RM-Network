@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, JOB_CATEGORY_CHIP_COLOR } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 import { Link2, Plus, Copy, Check, ExternalLink, Trash2, Loader2, Building2, ToggleLeft, ToggleRight } from "lucide-react";
 
 interface BookingLink {
@@ -110,7 +111,7 @@ function LinksContent() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Booking Links</h1>
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Booking Links</h1>
           <p className="text-slate-500 text-sm mt-0.5">Generate unique links for tenants to book jobs</p>
         </div>
         <Button onClick={() => setShowNew(true)}>
@@ -140,7 +141,7 @@ function LinksContent() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`h-2 w-2 rounded-full flex-shrink-0 ${link.isActive ? "bg-green-500" : "bg-slate-300"}`} />
                       <h3 className="font-semibold text-slate-900">{link.label || "Booking link"}</h3>
-                      {cat && <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${cat.color}`}>{cat.label}</span>}
+                      {cat && <Chip label={cat.label} color={JOB_CATEGORY_CHIP_COLOR[link.jobCategory ?? ""] ?? "slate"} />}
                     </div>
                     <div className="flex items-center gap-3 text-sm text-slate-500 mb-3">
                       {prop && <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{prop.name}</span>}
