@@ -42,17 +42,17 @@ function getInitials(name: string) {
 interface TopBarProps {
   userName: string;
   userRole?: string;
-  accent?: "violet" | "emerald";
+  accent?: "blue" | "emerald";
 }
 
-export function TopBar({ userName, userRole = "admin", accent = "violet" }: TopBarProps) {
+export function TopBar({ userName, userRole = "admin", accent = "blue" }: TopBarProps) {
   const pathname = usePathname();
   const { section, page } = getBreadcrumb(pathname);
 
-  const avatarBg = accent === "emerald" ? "bg-emerald-600" : "bg-violet-600";
+  const avatarBg = accent === "emerald" ? "bg-emerald-600" : "bg-blue-600";
   const roleBg = accent === "emerald"
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-    : "bg-violet-50 text-violet-700 border-violet-200";
+    : "bg-blue-50 text-blue-700 border-blue-200";
   const roleLabel = userRole === "agent" ? "Agent" : "Admin";
 
   return (

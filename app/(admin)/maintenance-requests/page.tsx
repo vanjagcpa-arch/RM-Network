@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, Check, X, Clock, Send, CheckCircle2, XCircle, ChevronDown } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Loader2, Check, X, Clock, Send, CheckCircle2, XCircle, ChevronDown, MessageCircle } from "lucide-react";
 import { JOB_CATEGORIES } from "@/lib/utils";
 
 interface Request {
@@ -25,14 +25,125 @@ interface Request {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-violet-50 text-violet-700 border-violet-200", dot: "bg-violet-500" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
-  rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
+interface Comment {
+  id: string;
+  authorName: string;
+  authorRole: string;
+  content: string;
+  createdAt: string;
+}
+
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
+  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
+  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
+  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
 };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function getInitials(name: string) {
+  return name.split(" ").map((p) => p[0]).join("").toUpperCase().slice(0, 2);
+}
+
+function CommentsPanel({ requestId }: { requestId: string }) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  async function loadComments() {
+    const res = await fetch(`/api/admin/maintenance-requests/${requestId}/comments`);
+    const data = await res.json();
+    setComments(Array.isArray(data) ? data : []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadComments();
+    const interval = setInterval(loadComments, 15000);
+    return () => clearInterval(interval);
+  }, [requestId]);
+
+  async function sendComment() {
+    if (!content.trim()) return;
+    setSending(true);
+    const res = await fetch(`/api/admin/maintenance-requests/${requestId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (res.ok) {
+      setContent("");
+      await loadComments();
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+    setSending(false);
+  }
+
+  const roleColor: Record<string, string> = {
+    admin: "bg-blue-100 text-blue-700",
+    agent: "bg-emerald-100 text-emerald-700",
+  };
+
+  return (
+    <div className="border-t border-slate-100 bg-slate-50/50 px-5 py-4">
+      <p className="text-xs font-semibold text-slate-700 mb-3">Internal comments</p>
+
+      {loading ? (
+        <div className="flex justify-center py-3">
+          <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+        </div>
+      ) : comments.length === 0 ? (
+        <p className="text-xs text-slate-400 italic mb-3">No comments yet. Start the thread below.</p>
+      ) : (
+        <div className="space-y-3 mb-3 max-h-64 overflow-y-auto">
+          {[...comments].reverse().map((c) => (
+            <div key={c.id} className="flex items-start gap-2.5">
+              <div className="h-7 w-7 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 flex-shrink-0">
+                {getInitials(c.authorName)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                  <span className="text-xs font-semibold text-slate-800">{c.authorName}</span>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${roleColor[c.authorRole] ?? "bg-slate-100 text-slate-600"}`}>
+                    {c.authorRole}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {new Date(c.createdAt).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 whitespace-pre-wrap">{c.content}</p>
+              </div>
+            </div>
+          ))}
+          <div ref={bottomRef} />
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={2}
+          placeholder="Write a comment…"
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendComment(); }}
+          className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        />
+        <button
+          onClick={sendComment}
+          disabled={!content.trim() || sending}
+          className="self-end flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+          Send
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function ApproveModal({
   request,
@@ -108,7 +219,7 @@ function ApproveModal({
                   key={i}
                   type="button"
                   onClick={() => toggleDay(i)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
                 >
                   {day}
                 </button>
@@ -126,7 +237,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeStart}
                   onChange={(e) => setAllowedTimeStart(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -135,7 +246,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeEnd}
                   onChange={(e) => setAllowedTimeEnd(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -149,7 +260,7 @@ function ApproveModal({
           <button
             onClick={submit}
             disabled={submitting || allowedWeekdays.length === 0 || !request.tenantEmail}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Send booking link
@@ -231,6 +342,14 @@ export default function MaintenanceRequestsPage() {
   const [approving, setApproving] = useState<Request | null>(null);
   const [rejecting, setRejecting] = useState<Request | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [expandedComments, setExpandedComments] = useState<string | null>(null);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+
+  // Bulk selection
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkRejecting, setBulkRejecting] = useState(false);
+  const [bulkRejectReason, setBulkRejectReason] = useState("");
+  const [bulkWorking, setBulkWorking] = useState(false);
 
   function load() {
     setLoading(true);
@@ -243,17 +362,67 @@ export default function MaintenanceRequestsPage() {
 
   const pendingCount = requests.filter((r) => r.status === "pending").length;
   const filtered = filter ? requests.filter((r) => r.status === filter) : requests;
+  const pendingFiltered = filtered.filter((r) => r.status === "pending");
+
+  // Keep selection clean when filter changes
+  useEffect(() => { setSelected(new Set()); }, [filter]);
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selected.size === pendingFiltered.length && pendingFiltered.length > 0) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(pendingFiltered.map((r) => r.id)));
+    }
+  }
+
+  async function bulkApprove() {
+    setBulkWorking(true);
+    await fetch("/api/admin/maintenance-requests/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: [...selected], action: "approve" }),
+    });
+    setSelected(new Set());
+    setBulkWorking(false);
+    load();
+  }
+
+  async function bulkReject() {
+    setBulkWorking(true);
+    await fetch("/api/admin/maintenance-requests/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: [...selected], action: "reject", rejectionReason: bulkRejectReason }),
+    });
+    setSelected(new Set());
+    setBulkRejectReason("");
+    setBulkRejecting(false);
+    setBulkWorking(false);
+    load();
+  }
+
+  function toggleComments(id: string) {
+    setExpandedComments((prev) => (prev === id ? null : id));
+  }
 
   return (
-    <div className="p-8">
+    <div className="p-8 pb-32">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Maintenance Requests</h1>
           <p className="text-slate-500 text-sm mt-1">Review and approve requests submitted by your agents</p>
         </div>
         {pendingCount > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 text-sm font-semibold text-amber-700">
-            <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
+            <span className="h-2 w-2 rounded-full bg-amber-400 mr-1.5" />
             {pendingCount} pending review
           </span>
         )}
@@ -290,23 +459,51 @@ export default function MaintenanceRequestsPage() {
         </div>
       ) : (
         <div className="space-y-3">
+          {/* Select-all row (only shown when filtering pending) */}
+          {filter === "pending" && pendingFiltered.length > 0 && (
+            <div className="flex items-center gap-2 px-1">
+              <input
+                type="checkbox"
+                checked={selected.size === pendingFiltered.length && pendingFiltered.length > 0}
+                onChange={toggleSelectAll}
+                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-xs text-slate-500">Select all pending ({pendingFiltered.length})</span>
+            </div>
+          )}
+
           {filtered.map((r) => {
             const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
             const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
             const isOpen = expanded === r.id;
+            const commentsOpen = expandedComments === r.id;
+            const isPending = r.status === "pending";
+            const isSelected = selected.has(r.id);
 
             return (
               <div key={r.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 {/* Row */}
-                <div
-                  className="px-5 py-4 flex items-start gap-4 cursor-pointer hover:bg-slate-50/50 transition-colors"
-                  onClick={() => setExpanded(isOpen ? null : r.id)}
-                >
-                  <div className="flex-1 min-w-0">
+                <div className="px-5 py-4 flex items-start gap-3">
+                  {/* Checkbox (pending only) */}
+                  {isPending && (
+                    <div className="flex-shrink-0 pt-0.5">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(r.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  <div
+                    className="flex-1 min-w-0 cursor-pointer hover:bg-slate-50/50 -mx-1 px-1 rounded transition-colors"
+                    onClick={() => setExpanded(isOpen ? null : r.id)}
+                  >
                     <div className="flex items-start gap-3 mb-1">
                       <p className="font-semibold text-slate-900 text-sm">{r.title}</p>
-                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium flex-shrink-0 ${s.color}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
                         {s.label}
                       </span>
                     </div>
@@ -320,12 +517,13 @@ export default function MaintenanceRequestsPage() {
                       <span>{new Date(r.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}</span>
                     </div>
                   </div>
+
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {r.status === "pending" && (
+                    {isPending && (
                       <>
                         <button
                           onClick={(e) => { e.stopPropagation(); setApproving(r); }}
-                          className="flex items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-700 transition-colors"
+                          className="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
                         >
                           <Check className="h-3.5 w-3.5" /> Approve
                         </button>
@@ -337,7 +535,18 @@ export default function MaintenanceRequestsPage() {
                         </button>
                       </>
                     )}
-                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                    <button
+                      onClick={() => toggleComments(r.id)}
+                      className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition-colors ${commentsOpen ? "bg-blue-50 border-blue-200 text-blue-700" : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"}`}
+                      title="Comments"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      {commentCounts[r.id] ? <span>{commentCounts[r.id]}</span> : null}
+                    </button>
+                    <ChevronDown
+                      className={`h-4 w-4 text-slate-400 transition-transform cursor-pointer ${isOpen ? "rotate-180" : ""}`}
+                      onClick={() => setExpanded(isOpen ? null : r.id)}
+                    />
                   </div>
                 </div>
 
@@ -370,9 +579,72 @@ export default function MaintenanceRequestsPage() {
                     )}
                   </div>
                 )}
+
+                {/* Comments panel */}
+                {commentsOpen && <CommentsPanel requestId={r.id} />}
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg px-8 py-4">
+          <div className="max-w-4xl mx-auto flex items-center gap-3 flex-wrap">
+            <span className="text-sm font-semibold text-slate-800">{selected.size} selected</span>
+
+            {bulkRejecting ? (
+              <>
+                <input
+                  type="text"
+                  value={bulkRejectReason}
+                  onChange={(e) => setBulkRejectReason(e.target.value)}
+                  placeholder="Rejection reason (optional)"
+                  className="flex-1 min-w-48 rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                />
+                <button
+                  onClick={bulkReject}
+                  disabled={bulkWorking}
+                  className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                >
+                  {bulkWorking ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
+                  Confirm reject {selected.size}
+                </button>
+                <button
+                  onClick={() => { setBulkRejecting(false); setBulkRejectReason(""); }}
+                  className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-800 transition-colors"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={bulkApprove}
+                  disabled={bulkWorking}
+                  className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {bulkWorking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  Approve {selected.size} selected
+                </button>
+                <button
+                  onClick={() => setBulkRejecting(true)}
+                  disabled={bulkWorking}
+                  className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                  Reject {selected.size} selected
+                </button>
+                <button
+                  onClick={() => setSelected(new Set())}
+                  className="ml-auto text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                >
+                  Clear selection
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 

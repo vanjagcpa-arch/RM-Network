@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { jobs, properties } from "@/db/schema";
+import { jobs, properties, technicianBlockouts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getSmartRecommendations } from "@/lib/scheduling";
 
@@ -31,6 +31,16 @@ export async function GET(req: NextRequest) {
       technicianId: r.job.technicianId ?? null,
     }));
 
+  // Fetch blockouts for the preferred technician (if any) and exclude those dates
+  let blockedDates = new Set<string>();
+  if (preferredTechnicianId) {
+    const blockouts = await db
+      .select({ blockDate: technicianBlockouts.blockDate })
+      .from(technicianBlockouts)
+      .where(eq(technicianBlockouts.technicianId, preferredTechnicianId));
+    blockedDates = new Set(blockouts.map((b) => b.blockDate));
+  }
+
   const recommendations = getSmartRecommendations(
     {
       id: property.id,
@@ -43,5 +53,9 @@ export async function GET(req: NextRequest) {
     daysAhead
   );
 
-  return NextResponse.json(recommendations);
+  const filtered = blockedDates.size > 0
+    ? recommendations.filter((r) => !blockedDates.has(r.date))
+    : recommendations;
+
+  return NextResponse.json(filtered);
 }

@@ -30,7 +30,7 @@ const emptyForm = { name: "", address: "", suburb: "", state: "VIC", postcode: "
 function HealthDot({ overdue, upcoming, total }: { overdue: number; upcoming: number; total: number }) {
   if (overdue > 0) return <span className="inline-flex h-2.5 w-2.5 rounded-full bg-red-500 flex-shrink-0" />;
   if (total > 0) return <span className="inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 flex-shrink-0" />;
-  if (upcoming > 0) return <span className="inline-flex h-2.5 w-2.5 rounded-full bg-violet-500 flex-shrink-0" />;
+  if (upcoming > 0) return <span className="inline-flex h-2.5 w-2.5 rounded-full bg-blue-500 flex-shrink-0" />;
   return <span className="inline-flex h-2.5 w-2.5 rounded-full bg-green-400 flex-shrink-0" />;
 }
 
@@ -109,9 +109,9 @@ export default function BuildingsPage() {
       {!loading && buildingsList.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
-            { label: "Buildings", value: buildingsList.length, icon: Building2, color: "text-violet-600", bg: "bg-violet-50" },
+            { label: "Buildings", value: buildingsList.length, icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
             { label: "Total Units", value: totalUnits, icon: Home, color: "text-slate-600", bg: "bg-slate-50" },
-            { label: "Upcoming Jobs", value: buildingsList.reduce((s, b) => s + b.upcoming, 0), icon: Calendar, color: "text-violet-600", bg: "bg-violet-50" },
+            { label: "Upcoming Jobs", value: buildingsList.reduce((s, b) => s + b.upcoming, 0), icon: Calendar, color: "text-blue-600", bg: "bg-blue-50" },
             { label: "Overdue", value: totalOverdue, icon: AlertCircle, color: totalOverdue > 0 ? "text-red-600" : "text-slate-400", bg: totalOverdue > 0 ? "bg-red-50" : "bg-slate-50" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
             <div key={label} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
@@ -128,7 +128,7 @@ export default function BuildingsPage() {
       <div className="relative mb-5">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search buildings…"
-          className="w-full max-w-sm pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          className="w-full max-w-sm pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
       {loading ? (
@@ -146,8 +146,8 @@ export default function BuildingsPage() {
               <Link href={`/buildings/${b.id}`} className="block p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${b.overdue > 0 ? "bg-red-50" : "bg-violet-50"}`}>
-                      <Building2 className={`h-4 w-4 ${b.overdue > 0 ? "text-red-500" : "text-violet-600"}`} />
+                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${b.overdue > 0 ? "bg-red-50" : "bg-blue-50"}`}>
+                      <Building2 className={`h-4 w-4 ${b.overdue > 0 ? "text-red-500" : "text-blue-600"}`} />
                     </div>
                     <div className="min-w-0">
                       <h3 className="font-semibold text-slate-900 leading-tight truncate">{b.name}</h3>
@@ -157,7 +157,7 @@ export default function BuildingsPage() {
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-violet-500 transition-colors flex-shrink-0 ml-2" />
+                  <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors flex-shrink-0 ml-2" />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center mb-3">
@@ -189,7 +189,7 @@ export default function BuildingsPage() {
 
               <div className="flex items-center gap-1 px-5 py-2.5 border-t border-slate-100">
                 <button onClick={(e) => { e.preventDefault(); openEdit(b); }}
-                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-violet-600 transition-colors py-0.5 px-1.5 rounded hover:bg-slate-50">
+                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 transition-colors py-0.5 px-1.5 rounded hover:bg-slate-50">
                   <Pencil className="h-3 w-3" /> Edit
                 </button>
                 <button onClick={(e) => { e.preventDefault(); setShowDelete(b); }}
@@ -235,7 +235,7 @@ export default function BuildingsPage() {
               <Label>Notes</Label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2}
                 placeholder="Access instructions, strata details…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button type="button" variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>

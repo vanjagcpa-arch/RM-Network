@@ -8,14 +8,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -46,13 +45,13 @@ body {
 
 /* Selection */
 ::selection {
-  background: #ede9fe;
-  color: #4c1d95;
+  background: #dbeafe;
+  color: #1e3a8a;
 }
 
 /* Focus ring */
 *:focus-visible {
-  outline: 2px solid #7c3aed;
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Loader2, ClipboardList, Send, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, ClipboardList, Send, Clock, CheckCircle2, XCircle, MessageCircle } from "lucide-react";
 import { JOB_CATEGORIES } from "@/lib/utils";
 
 interface Request {
@@ -19,11 +19,19 @@ interface Request {
   rejectionReason: string | null;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-violet-50 text-violet-700 border-violet-200", dot: "bg-violet-500" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
-  rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
+interface Comment {
+  id: string;
+  authorName: string;
+  authorRole: string;
+  content: string;
+  createdAt: string;
+}
+
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
+  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
+  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
+  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
 };
 
 const ALL_STATUSES = [
@@ -34,10 +42,114 @@ const ALL_STATUSES = [
   { value: "rejected", label: "Not approved", icon: XCircle },
 ];
 
+function getInitials(name: string) {
+  return name.split(" ").map((p) => p[0]).join("").toUpperCase().slice(0, 2);
+}
+
+function CommentsPanel({ requestId }: { requestId: string }) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  async function loadComments() {
+    const res = await fetch(`/api/agent/requests/${requestId}/comments`);
+    const data = await res.json();
+    setComments(Array.isArray(data) ? data : []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadComments();
+    const interval = setInterval(loadComments, 15000);
+    return () => clearInterval(interval);
+  }, [requestId]);
+
+  async function sendComment() {
+    if (!content.trim()) return;
+    setSending(true);
+    const res = await fetch(`/api/agent/requests/${requestId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (res.ok) {
+      setContent("");
+      await loadComments();
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+    setSending(false);
+  }
+
+  const roleColor: Record<string, string> = {
+    admin: "bg-blue-100 text-blue-700",
+    agent: "bg-emerald-100 text-emerald-700",
+  };
+
+  return (
+    <div className="border-t border-slate-100 bg-slate-50/50 px-5 py-4">
+      <p className="text-xs font-semibold text-slate-700 mb-3">Internal comments</p>
+
+      {loading ? (
+        <div className="flex justify-center py-3">
+          <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
+        </div>
+      ) : comments.length === 0 ? (
+        <p className="text-xs text-slate-400 italic mb-3">No comments yet.</p>
+      ) : (
+        <div className="space-y-3 mb-3 max-h-60 overflow-y-auto">
+          {[...comments].reverse().map((c) => (
+            <div key={c.id} className="flex items-start gap-2.5">
+              <div className="h-7 w-7 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 flex-shrink-0">
+                {getInitials(c.authorName)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                  <span className="text-xs font-semibold text-slate-800">{c.authorName}</span>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${roleColor[c.authorRole] ?? "bg-slate-100 text-slate-600"}`}>
+                    {c.authorRole}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {new Date(c.createdAt).toLocaleString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 whitespace-pre-wrap">{c.content}</p>
+              </div>
+            </div>
+          ))}
+          <div ref={bottomRef} />
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={2}
+          placeholder="Write a comment…"
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendComment(); }}
+          className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+        />
+        <button
+          onClick={sendComment}
+          disabled={!content.trim() || sending}
+          className="self-end flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+        >
+          {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+          Send
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AgentRequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+  const [expandedComments, setExpandedComments] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/agent/requests")
@@ -90,35 +202,49 @@ export default function AgentRequestsPage() {
             {filtered.map((r) => {
               const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
               const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
+              const commentsOpen = expandedComments === r.id;
+
               return (
-                <div key={r.id} className="px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{r.title}</p>
-                      </div>
-                      <Link href={`/agent/properties/${r.propertyId}`} className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
-                        {r.propertyName ?? "View property"}
-                      </Link>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {cat?.label ?? r.jobCategory}
-                        {r.tenantName ? ` · ${r.tenantName}` : ""}
-                        {r.unitNumber ? ` · Unit ${r.unitNumber}` : ""}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        {new Date(r.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
-                      </p>
-                      {r.status === "rejected" && r.rejectionReason && (
-                        <div className="mt-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs text-red-700 inline-block">
-                          Reason: {r.rejectionReason}
+                <div key={r.id}>
+                  <div className="px-5 py-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <p className="text-sm font-semibold text-slate-900 truncate">{r.title}</p>
                         </div>
-                      )}
+                        <Link href={`/agent/properties/${r.propertyId}`} className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
+                          {r.propertyName ?? "View property"}
+                        </Link>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {cat?.label ?? r.jobCategory}
+                          {r.tenantName ? ` · ${r.tenantName}` : ""}
+                          {r.unitNumber ? ` · Unit ${r.unitNumber}` : ""}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          {new Date(r.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
+                        {r.status === "rejected" && r.rejectionReason && (
+                          <div className="mt-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs text-red-700 inline-block">
+                            Reason: {r.rejectionReason}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${s.color}`}>
+                          {s.label}
+                        </span>
+                        <button
+                          onClick={() => setExpandedComments(commentsOpen ? null : r.id)}
+                          className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition-colors ${commentsOpen ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"}`}
+                          title="Comments"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${s.color}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-                      {s.label}
-                    </span>
                   </div>
+
+                  {commentsOpen && <CommentsPanel requestId={r.id} />}
                 </div>
               );
             })}

@@ -71,25 +71,30 @@ function AgentFormModal({
     e.preventDefault();
     setError("");
     setSubmitting(true);
+    try {
+      const url = editing ? `/api/admin/agents/${editing.id}` : "/api/admin/agents";
+      const method = editing ? "PUT" : "POST";
+      const body: Record<string, unknown> = { ...form, propertyIds: Array.from(selectedIds) };
+      if (!form.password) delete body.password;
 
-    const url = editing ? `/api/admin/agents/${editing.id}` : "/api/admin/agents";
-    const method = editing ? "PUT" : "POST";
-    const body: Record<string, unknown> = { ...form, propertyIds: Array.from(selectedIds) };
-    if (!form.password) delete body.password;
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (res.ok) {
-      onDone();
-    } else {
-      const data = await res.json();
-      setError(data.error ?? "Failed to save");
+      if (res.ok) {
+        onDone();
+      } else {
+        let msg = "Failed to save";
+        try { const d = await res.json(); msg = d.error ?? msg; } catch {}
+        setError(msg);
+      }
+    } catch {
+      setError("Network error — please try again");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   const filteredProps = allProperties.filter(
@@ -158,19 +163,19 @@ function AgentFormModal({
                 ) : filteredProps.map((p) => (
                   <label
                     key={p.id}
-                    className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 ${selectedIds.has(p.id) ? "bg-violet-50/50" : ""}`}
+                    className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 ${selectedIds.has(p.id) ? "bg-blue-50/50" : ""}`}
                   >
                     <input
                       type="checkbox"
                       checked={selectedIds.has(p.id)}
                       onChange={() => toggleProp(p.id)}
-                      className="accent-violet-600"
+                      className="accent-blue-600"
                     />
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-slate-900 truncate">{p.name}</p>
                       <p className="text-xs text-slate-500 truncate">{p.address}{p.suburb ? `, ${p.suburb}` : ""}</p>
                     </div>
-                    {selectedIds.has(p.id) && <Check className="h-4 w-4 text-violet-600 ml-auto flex-shrink-0" />}
+                    {selectedIds.has(p.id) && <Check className="h-4 w-4 text-blue-600 ml-auto flex-shrink-0" />}
                   </label>
                 ))}
               </div>
@@ -232,7 +237,7 @@ export default function AgentsPage() {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors shadow-sm"
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
         >
           <UserPlus className="h-4 w-4" /> Add agent
         </button>
@@ -247,7 +252,7 @@ export default function AgentsPage() {
           <Building2 className="h-10 w-10 text-slate-200 mx-auto mb-3" />
           <p className="text-slate-500 font-medium">No agents yet</p>
           <p className="text-slate-400 text-sm mt-1">Add your first agent to give them access to the agent portal.</p>
-          <button onClick={() => setShowForm(true)} className="mt-4 inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-medium">
+          <button onClick={() => setShowForm(true)} className="mt-4 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium">
             <UserPlus className="h-4 w-4" /> Add agent
           </button>
         </div>
