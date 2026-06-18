@@ -118,7 +118,7 @@ export default async function CompliancePage() {
             {propertyStats.map(({ prop, cats }) => (
               <tr key={prop.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-5 py-3">
-                  <Link href={`/buildings/${prop.id}`} className="font-medium text-slate-900 hover:text-blue-600 transition-colors">
+                  <Link href={`/buildings/${prop.id}`} className="font-medium text-slate-900 hover:text-violet-600 transition-colors">
                     {prop.name}
                   </Link>
                   {prop.suburb && <p className="text-xs text-slate-400">{prop.suburb}</p>}
@@ -144,7 +144,7 @@ export default async function CompliancePage() {
           <div className="py-16 text-center">
             <ShieldCheck className="h-10 w-10 text-slate-200 mx-auto mb-3" />
             <p className="text-slate-500">No properties added yet.</p>
-            <Link href="/properties" className="text-sm text-blue-600 hover:underline mt-1 inline-block">Add a property →</Link>
+            <Link href="/properties" className="text-sm text-violet-600 hover:underline mt-1 inline-block">Add a property →</Link>
           </div>
         )}
       </div>
@@ -173,7 +173,7 @@ function ComplianceCell({ status, lastDate, nextDue, today, propertyId, jobCateg
         <span className="h-2.5 w-2.5 rounded-full bg-slate-300 inline-block" />
         <span className="text-xs text-slate-400">Never</span>
         <Link href={`/jobs/new?propertyId=${propertyId}&jobCategory=${jobCategory}`}
-          className="text-xs text-blue-600 hover:underline flex items-center gap-0.5">
+          className="text-xs text-violet-600 hover:underline flex items-center gap-0.5">
           <Plus className="h-2.5 w-2.5" />Schedule
         </Link>
       </div>
@@ -193,7 +193,7 @@ function ComplianceCell({ status, lastDate, nextDue, today, propertyId, jobCateg
       </span>
       {(status === "overdue" || status === "due_soon") && (
         <Link href={`/jobs/new?propertyId=${propertyId}&jobCategory=${jobCategory}`}
-          className="text-xs text-blue-600 hover:underline flex items-center gap-0.5 mt-0.5">
+          className="text-xs text-violet-600 hover:underline flex items-center gap-0.5 mt-0.5">
           <Plus className="h-2.5 w-2.5" />Schedule
         </Link>
       )}
