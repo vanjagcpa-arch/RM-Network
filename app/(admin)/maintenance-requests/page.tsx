@@ -27,7 +27,7 @@ interface Request {
 
 const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
   pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-violet-50 text-violet-700 border-violet-200", dot: "bg-violet-500" },
+  sent: { label: "Booking link sent", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-500" },
   booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
   rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
 };
@@ -108,7 +108,7 @@ function ApproveModal({
                   key={i}
                   type="button"
                   onClick={() => toggleDay(i)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
                 >
                   {day}
                 </button>
@@ -126,7 +126,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeStart}
                   onChange={(e) => setAllowedTimeStart(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -135,7 +135,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeEnd}
                   onChange={(e) => setAllowedTimeEnd(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -149,7 +149,7 @@ function ApproveModal({
           <button
             onClick={submit}
             disabled={submitting || allowedWeekdays.length === 0 || !request.tenantEmail}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Send booking link
@@ -325,7 +325,7 @@ export default function MaintenanceRequestsPage() {
                       <>
                         <button
                           onClick={(e) => { e.stopPropagation(); setApproving(r); }}
-                          className="flex items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-700 transition-colors"
+                          className="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
                         >
                           <Check className="h-3.5 w-3.5" /> Approve
                         </button>

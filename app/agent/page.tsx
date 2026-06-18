@@ -25,7 +25,7 @@ interface Request {
 
 const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
   pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-violet-50 text-violet-700 border-violet-200", dot: "bg-violet-500" },
+  sent: { label: "Booking link sent", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-500" },
   booked: { label: "Booked", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
   rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
 };
@@ -68,7 +68,7 @@ export default function AgentDashboard() {
             {[
               { label: "Properties", value: properties.length, icon: Building2, color: "text-emerald-600", bg: "bg-emerald-50" },
               { label: "Awaiting review", value: pending, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-              { label: "Booking link sent", value: sent, icon: ClipboardList, color: "text-violet-600", bg: "bg-violet-50" },
+              { label: "Booking link sent", value: sent, icon: ClipboardList, color: "text-blue-600", bg: "bg-blue-50" },
               { label: "Booked", value: booked, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
             ].map(({ label, value, icon: Icon, color, bg }) => (
               <div key={label} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">

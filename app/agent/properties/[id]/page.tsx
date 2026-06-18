@@ -30,7 +30,7 @@ interface Request {
 
 const STATUS_STYLES: Record<string, { label: string; color: string; dot: string; icon: React.ElementType }> = {
   pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400", icon: Clock },
-  sent: { label: "Booking link sent", color: "bg-violet-50 text-violet-700 border-violet-200", dot: "bg-violet-500", icon: Send },
+  sent: { label: "Booking link sent", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-500", icon: Send },
   booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500", icon: CheckCircle2 },
   rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400", icon: XCircle },
 };
