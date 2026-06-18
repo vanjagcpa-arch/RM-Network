@@ -251,7 +251,7 @@ function NewJobForm() {
                       onClick={() => setForm((f) => ({ ...f, scheduledDate: rec.date }))}
                       className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${selected ? "border-green-500 bg-[#ECFDE8] shadow-sm" : isBuildingMatch ? "border-emerald-200 bg-emerald-50/50 hover:border-emerald-400" : "border-slate-200 hover:border-green-300 hover:bg-slate-50"}`}
                     >
-                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? "bg-[#9CFF5F]" : isBuildingMatch ? "bg-emerald-100" : "bg-slate-100"}`}>
+                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? "bg-slate-900" : isBuildingMatch ? "bg-emerald-100" : "bg-slate-100"}`}>
                         {isBuildingMatch
                           ? <Building2 className={`h-4 w-4 ${selected ? "text-white" : "text-emerald-600"}`} />
                           : <Calendar className={`h-4 w-4 ${selected ? "text-white" : "text-slate-500"}`} />
@@ -359,7 +359,7 @@ function NewJobForm() {
           <div className={`rounded-xl border p-5 transition-colors ${sendBookingRequest ? "bg-[#ECFDE8] border-[#CFF8C8]" : "bg-white border-slate-200"}`}>
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className={`mt-0.5 h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${sendBookingRequest ? "bg-[#9CFF5F]" : "bg-slate-100"}`}>
+                <div className={`mt-0.5 h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${sendBookingRequest ? "bg-slate-900" : "bg-slate-100"}`}>
                   <Send className={`h-4 w-4 ${sendBookingRequest ? "text-white" : "text-slate-500"}`} />
                 </div>
                 <div>

@@ -28,7 +28,7 @@ export default function AgentPropertiesPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">My Properties</h1>
+        <h1 className="text-3xl font-bold text-slate-900 font-cabinet">My Properties</h1>
         <p className="text-slate-500 text-sm mt-1">Properties assigned to you. Click any to submit a maintenance request.</p>
       </div>
 
@@ -51,8 +51,8 @@ export default function AgentPropertiesPage() {
               className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-emerald-300 hover:shadow-md transition-all flex items-center justify-between group"
             >
               <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                  <Building2 className="h-5 w-5 text-emerald-600" />
+                <div className="h-10 w-10 rounded-lg bg-[#ECFDE8] flex items-center justify-center flex-shrink-0">
+                  <Building2 className="h-5 w-5 text-[#16A34A]" />
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">{p.name}</p>

@@ -85,7 +85,7 @@ export default function CalendarPage() {
       {/* Calendar */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">{MONTH_NAMES[month]} {year}</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">{MONTH_NAMES[month]} {year}</h1>
           <div className="flex items-center gap-2">
             {loading && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
             <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
@@ -132,7 +132,7 @@ export default function CalendarPage() {
                   className={`min-h-[100px] border-b border-r border-slate-100 p-2 cursor-pointer transition-colors ${isSelected ? "bg-[#ECFDE8] border-[#CFF8C8]" : "hover:bg-slate-50"} ${(i + firstDay) % 7 === 6 ? "border-r-0" : ""}`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-[#9CFF5F] text-[#0F172A]" : isSelected ? "text-[#16A34A]" : "text-slate-700"}`}>
+                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-slate-900 text-white" : isSelected ? "text-[#16A34A]" : "text-slate-700"}`}>
                       {day}
                     </span>
                     {dayJobs.length > 0 && (
@@ -294,7 +294,7 @@ function RoutePanel({ jobs }: { jobs: Job[] }) {
       <div className="px-4 py-3 border-t border-slate-100">
         {mapsUrl ? (
           <a href={mapsUrl} target="_blank" rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#9CFF5F] px-3 py-2 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition-colors">
             <ExternalLink className="h-3.5 w-3.5" /> Open route in Google Maps
           </a>
         ) : (

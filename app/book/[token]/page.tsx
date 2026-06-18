@@ -161,8 +161,8 @@ export default function BookingPage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#9CFF5F] shadow-lg mb-4">
-            <Wrench className="h-7 w-7 text-[#0F172A]" />
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 shadow-lg mb-4">
+            <Wrench className="h-7 w-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Book a Service</h1>
           <p className="text-slate-500 mt-1">{linkInfo?.label ?? "Schedule your maintenance appointment"}</p>

@@ -106,7 +106,7 @@ function AvailabilityPanel({ technicianId }: { technicianId: string }) {
         <button
           onClick={addBlockout}
           disabled={!blockDate || saving}
-          className="flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
+          className="flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
         >
           {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
           Block date
@@ -243,7 +243,7 @@ export default function TechniciansPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Technicians</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Technicians</h1>
           <p className="text-slate-500 text-sm mt-0.5">{active.length} active · {inactive.length} inactive</p>
         </div>
         <Button onClick={openNew}><Plus className="h-4 w-4" /> Add Technician</Button>

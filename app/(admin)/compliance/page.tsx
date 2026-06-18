@@ -76,7 +76,7 @@ export default async function CompliancePage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Compliance Dashboard</h1>
+        <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Compliance Dashboard</h1>
         <p className="text-slate-500 text-sm mt-0.5">Track compliance status across all properties</p>
       </div>
 

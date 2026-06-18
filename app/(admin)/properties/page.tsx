@@ -61,7 +61,7 @@ function PropertiesPageInner() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Properties</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Properties</h1>
           <p className="text-slate-500 text-sm mt-0.5">{properties.length} managed properties</p>
         </div>
         <Button onClick={() => setShowNew(true)}>

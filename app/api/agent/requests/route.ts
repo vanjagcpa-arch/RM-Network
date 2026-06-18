@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
     unitNumber,
     notes,
     sendDirectly,
+    allowedWeekdays,
+    allowedTimeStart,
+    allowedTimeEnd,
   } = body;
 
   if (!propertyId || !jobCategory || !title) {
@@ -110,6 +113,9 @@ export async function POST(req: NextRequest) {
       status,
       bookingLinkId,
       notes: notes ?? null,
+      allowedWeekdays: allowedWeekdays ?? null,
+      allowedTimeStart: allowedTimeStart ?? null,
+      allowedTimeEnd: allowedTimeEnd ?? null,
     })
     .returning();
 

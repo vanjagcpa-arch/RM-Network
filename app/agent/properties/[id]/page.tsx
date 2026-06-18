@@ -30,6 +30,8 @@ interface Request {
 }
 
 
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 const EMPTY_FORM = {
   jobCategory: "",
   title: "",
@@ -40,6 +42,9 @@ const EMPTY_FORM = {
   unitNumber: "",
   notes: "",
   sendDirectly: false,
+  allowedWeekdays: [] as string[],
+  allowedTimeStart: "",
+  allowedTimeEnd: "",
 };
 
 export default function AgentPropertyDetailPage() {
@@ -78,7 +83,13 @@ export default function AgentPropertyDetailPage() {
     const res = await fetch("/api/agent/requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ propertyId: id, ...form }),
+      body: JSON.stringify({
+        propertyId: id,
+        ...form,
+        allowedWeekdays: form.allowedWeekdays.length > 0 ? form.allowedWeekdays.join(",") : null,
+        allowedTimeStart: form.allowedTimeStart || null,
+        allowedTimeEnd: form.allowedTimeEnd || null,
+      }),
     });
 
     if (res.ok) {
@@ -107,7 +118,7 @@ export default function AgentPropertyDetailPage() {
     return (
       <div className="p-8 text-center">
         <p className="text-slate-500">Property not found or not assigned to you.</p>
-        <button onClick={() => router.push("/agent/properties")} className="mt-3 text-sm text-emerald-600 hover:underline">
+        <button onClick={() => router.push("/agent/properties")} className="mt-3 text-sm text-[#16A34A] hover:underline">
           ← Back to properties
         </button>
       </div>
@@ -125,11 +136,11 @@ export default function AgentPropertyDetailPage() {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
-            <div className="h-11 w-11 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
-              <Building2 className="h-6 w-6 text-emerald-600" />
+            <div className="h-11 w-11 rounded-xl bg-[#ECFDE8] flex items-center justify-center flex-shrink-0">
+              <Building2 className="h-6 w-6 text-[#16A34A]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 font-cabinet">{property.name}</h1>
+              <h1 className="text-2xl font-bold text-slate-900 font-cabinet">{property.name}</h1>
               {property.buildingName && (
                 <p className="text-sm text-slate-400">{property.buildingName}</p>
               )}
@@ -149,7 +160,7 @@ export default function AgentPropertyDetailPage() {
 
       {/* Success / Error banners */}
       {success && (
-        <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
+        <div className="mb-4 rounded-lg bg-[#ECFDE8] border border-[#CFF8C8] px-4 py-3 text-sm text-[#16A34A] flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 flex-shrink-0" /> {success}
         </div>
       )}
@@ -161,7 +172,7 @@ export default function AgentPropertyDetailPage() {
 
       {/* New request form */}
       {showForm && (
-        <div className="bg-white rounded-xl border border-emerald-200 shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-xl border border-[#CFF8C8] shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-semibold text-slate-900">New Maintenance Request</h2>
             <button onClick={() => { setShowForm(false); setError(""); }} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -179,7 +190,7 @@ export default function AgentPropertyDetailPage() {
                     key={key}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, jobCategory: key }))}
-                    className={`flex items-center gap-3 rounded-lg border px-4 py-2.5 text-left transition-all ${form.jobCategory === key ? "border-emerald-500 bg-emerald-50" : "border-slate-200 hover:border-slate-300"}`}
+                    className={`flex items-center gap-3 rounded-lg border px-4 py-2.5 text-left transition-all ${form.jobCategory === key ? "border-slate-900 bg-[#ECFDE8]" : "border-slate-200 hover:border-slate-300"}`}
                   >
                     <span className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: cat.calColor }} />
                     <span className="text-sm font-medium text-slate-900">{cat.label}</span>
@@ -210,7 +221,7 @@ export default function AgentPropertyDetailPage() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={3}
                 placeholder="Provide as much detail as possible about the issue…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
@@ -246,8 +257,49 @@ export default function AgentPropertyDetailPage() {
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 rows={2}
                 placeholder="Urgency, access requirements, preferred contact times…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
+            </div>
+
+            {/* Preferred time window */}
+            <div className="border-t border-slate-100 pt-4">
+              <p className="text-sm font-semibold text-slate-900 mb-1">Preferred availability <span className="font-normal text-slate-400">(optional)</span></p>
+              <p className="text-xs text-slate-500 mb-3">Help us schedule at a convenient time for the tenant.</p>
+              <div className="space-y-3">
+                <div>
+                  <Label className="mb-2 block text-xs">Available days</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {WEEKDAYS.map((day) => {
+                      const selected = form.allowedWeekdays.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => setForm((f) => ({
+                            ...f,
+                            allowedWeekdays: selected
+                              ? f.allowedWeekdays.filter((d) => d !== day)
+                              : [...f.allowedWeekdays, day],
+                          }))}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${selected ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
+                        >
+                          {day}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="allowedTimeStart" className="text-xs">Earliest time</Label>
+                    <Input id="allowedTimeStart" type="time" value={form.allowedTimeStart} onChange={(e) => setForm((f) => ({ ...f, allowedTimeStart: e.target.value }))} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label htmlFor="allowedTimeEnd" className="text-xs">Latest time</Label>
+                    <Input id="allowedTimeEnd" type="time" value={form.allowedTimeEnd} onChange={(e) => setForm((f) => ({ ...f, allowedTimeEnd: e.target.value }))} className="mt-1" />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Send mode */}
@@ -265,13 +317,13 @@ export default function AgentPropertyDetailPage() {
                   desc: "Tenant receives a booking link immediately to choose their own appointment time. Requires tenant email.",
                 },
               ].map(({ value, label, desc }) => (
-                <label key={String(value)} className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-all ${form.sendDirectly === value ? "border-emerald-500 bg-emerald-50/50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+                <label key={String(value)} className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-all ${form.sendDirectly === value ? "border-slate-900 bg-[#ECFDE8]/50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
                   <input
                     type="radio"
                     name="sendMode"
                     checked={form.sendDirectly === value}
                     onChange={() => setForm((f) => ({ ...f, sendDirectly: value }))}
-                    className="mt-0.5 accent-emerald-600"
+                    className="mt-0.5 accent-green-600"
                   />
                   <div>
                     <p className="text-sm font-medium text-slate-900">{label}</p>
@@ -311,7 +363,7 @@ export default function AgentPropertyDetailPage() {
           <div className="px-5 py-10 text-center">
             <p className="text-sm text-slate-400">No requests submitted for this property yet.</p>
             {!showForm && (
-              <button onClick={() => setShowForm(true)} className="mt-3 inline-flex items-center gap-1.5 text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+              <button onClick={() => setShowForm(true)} className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#16A34A] hover:text-[#16A34A] font-medium">
                 <Plus className="h-3.5 w-3.5" /> Submit your first request
               </button>
             )}

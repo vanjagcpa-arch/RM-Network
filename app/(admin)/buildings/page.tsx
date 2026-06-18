@@ -96,7 +96,7 @@ export default function BuildingsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Buildings</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Buildings</h1>
           <p className="text-slate-500 text-sm mt-0.5">
             {buildingsList.length} building{buildingsList.length !== 1 ? "s" : ""} · {totalUnits} units
             {totalOverdue > 0 && <span className="ml-1.5 text-red-500 font-medium">· {totalOverdue} overdue</span>}

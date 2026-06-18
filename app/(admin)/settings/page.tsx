@@ -26,7 +26,7 @@ export default function SettingsPage() {
   return (
     <div className="p-8 max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Settings</h1>
+        <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Settings</h1>
         <p className="text-slate-500 text-sm mt-0.5">Configure integrations and app settings</p>
       </div>
 

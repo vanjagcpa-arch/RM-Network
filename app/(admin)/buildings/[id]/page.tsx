@@ -121,7 +121,7 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
           Units <span className="text-slate-400 font-normal text-sm">({units.length})</span>
         </h2>
         <Link href={`/properties?buildingId=${building.id}`}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-sm font-medium text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
+          className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 transition-colors">
           <Plus className="h-3.5 w-3.5" /> Add unit
         </Link>
       </div>
@@ -131,7 +131,7 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
           <Home className="h-10 w-10 text-slate-200 mx-auto mb-3" />
           <p className="text-slate-500 mb-4">No units linked to this building yet.</p>
           <Link href={`/properties?buildingId=${building.id}`}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#9CFF5F] px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
+            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors">
             <Plus className="h-4 w-4" /> Add first unit
           </Link>
         </div>

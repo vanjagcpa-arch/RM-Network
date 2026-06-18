@@ -111,7 +111,7 @@ function LinksContent() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Booking Links</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Booking Links</h1>
           <p className="text-slate-500 text-sm mt-0.5">Generate unique links for tenants to book jobs</p>
         </div>
         <Button onClick={() => setShowNew(true)}>
@@ -213,7 +213,7 @@ function LinksContent() {
                     key={day}
                     type="button"
                     onClick={() => toggleWeekday(i)}
-                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${form.allowedWeekdays.includes(i) ? "bg-[#9CFF5F] text-[#0F172A]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${form.allowedWeekdays.includes(i) ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
                   >
                     {day}
                   </button>

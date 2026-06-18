@@ -128,7 +128,7 @@ function CommentsPanel({ requestId }: { requestId: string }) {
         <button
           onClick={sendComment}
           disabled={!content.trim() || sending}
-          className="self-end flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
+          className="self-end flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
         >
           {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
           Send
@@ -212,7 +212,7 @@ function ApproveModal({
                   key={i}
                   type="button"
                   onClick={() => toggleDay(i)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-[#9CFF5F] text-[#0F172A] border-[#9CFF5F]" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
                 >
                   {day}
                 </button>
@@ -253,7 +253,7 @@ function ApproveModal({
           <button
             onClick={submit}
             disabled={submitting || allowedWeekdays.length === 0 || !request.tenantEmail}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[#9CFF5F] px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Send booking link
@@ -410,7 +410,7 @@ export default function MaintenanceRequestsPage() {
     <div className="p-8 pb-32">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Maintenance Requests</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Maintenance Requests</h1>
           <p className="text-slate-500 text-sm mt-1">Review and approve requests submitted by your agents</p>
         </div>
         {pendingCount > 0 && (
@@ -514,7 +514,7 @@ export default function MaintenanceRequestsPage() {
                       <>
                         <button
                           onClick={(e) => { e.stopPropagation(); setApproving(r); }}
-                          className="flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors"
+                          className="flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors"
                         >
                           <Check className="h-3.5 w-3.5" /> Approve
                         </button>
@@ -614,7 +614,7 @@ export default function MaintenanceRequestsPage() {
                 <button
                   onClick={bulkApprove}
                   disabled={bulkWorking}
-                  className="flex items-center gap-1.5 rounded-lg bg-[#9CFF5F] px-4 py-1.5 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
+                  className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
                 >
                   {bulkWorking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                   Approve {selected.size} selected

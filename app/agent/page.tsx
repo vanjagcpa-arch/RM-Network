@@ -48,7 +48,7 @@ export default function AgentDashboard() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-1">Submit and track maintenance requests for your properties</p>
       </div>
 
@@ -61,10 +61,10 @@ export default function AgentDashboard() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "Properties", value: properties.length, icon: Building2, color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Properties", value: properties.length, icon: Building2, color: "text-[#16A34A]", bg: "bg-[#ECFDE8]" },
               { label: "Awaiting review", value: pending, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
               { label: "Booking link sent", value: sent, icon: ClipboardList, color: "text-[#16A34A]", bg: "bg-[#ECFDE8]" },
-              { label: "Booked", value: booked, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Booked", value: booked, icon: CheckCircle2, color: "text-[#16A34A]", bg: "bg-[#ECFDE8]" },
             ].map(({ label, value, icon: Icon, color, bg }) => (
               <div key={label} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <div className={`h-9 w-9 rounded-lg ${bg} flex items-center justify-center mb-3`}>
@@ -81,7 +81,7 @@ export default function AgentDashboard() {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="font-semibold text-slate-900 text-sm">My Properties</h2>
-                <Link href="/agent/properties" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
+                <Link href="/agent/properties" className="text-xs text-[#16A34A] hover:text-[#16A34A] font-medium">
                   View all
                 </Link>
               </div>
@@ -111,14 +111,14 @@ export default function AgentDashboard() {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="font-semibold text-slate-900 text-sm">Recent Requests</h2>
-                <Link href="/agent/requests" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
+                <Link href="/agent/requests" className="text-xs text-[#16A34A] hover:text-[#16A34A] font-medium">
                   View all
                 </Link>
               </div>
               {requests.length === 0 ? (
                 <div className="px-5 py-8 text-center">
                   <p className="text-sm text-slate-400 mb-3">No requests submitted yet</p>
-                  <Link href="/agent/properties" className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 hover:text-emerald-700">
+                  <Link href="/agent/properties" className="inline-flex items-center gap-1.5 text-xs font-medium text-[#16A34A] hover:text-[#16A34A]">
                     <Plus className="h-3.5 w-3.5" /> Submit your first request
                   </Link>
                 </div>
@@ -128,13 +128,13 @@ export default function AgentDashboard() {
                     const s = REQUEST_STATUS_CHIP[r.status] ?? REQUEST_STATUS_CHIP.pending;
                     const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
                     return (
-                      <div key={r.id} className="px-5 py-3">
-                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <Link key={r.id} href="/agent/requests" className="flex items-center justify-between gap-2 px-5 py-3 hover:bg-slate-50 transition-colors">
+                        <div className="min-w-0">
                           <p className="text-sm font-medium text-slate-900 truncate">{r.title}</p>
-                          <Chip label={s.label} color={s.color} className="flex-shrink-0" />
+                          <p className="text-xs text-slate-500 truncate">{r.propertyName} · {cat?.label ?? r.jobCategory}</p>
                         </div>
-                        <p className="text-xs text-slate-500">{r.propertyName} · {cat?.label ?? r.jobCategory}</p>
-                      </div>
+                        <Chip label={s.label} color={s.color} className="flex-shrink-0" />
+                      </Link>
                     );
                   })}
                 </div>

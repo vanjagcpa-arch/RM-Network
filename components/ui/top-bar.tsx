@@ -72,7 +72,7 @@ export function TopBar({ userName, userRole = "admin" }: TopBarProps) {
         </span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-slate-700 hidden sm:block">{userName}</span>
-          <div className="h-8 w-8 rounded-full flex items-center justify-center text-[#0F172A] text-xs font-bold flex-shrink-0 bg-[#9CFF5F]">
+          <div className="h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 bg-slate-900">
             {getInitials(userName)}
           </div>
         </div>

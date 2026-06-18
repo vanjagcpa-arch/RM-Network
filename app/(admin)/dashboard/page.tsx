@@ -2,7 +2,6 @@ import { db } from "@/db";
 import { jobs, properties } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth";
-import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { formatDate, formatTime } from "@/lib/utils";
 import Link from "next/link";
@@ -65,7 +64,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">
             {greeting}, {session.name.split(" ")[0]}
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">
@@ -74,7 +73,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/jobs/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#9CFF5F] px-4 py-2.5 text-sm font-semibold text-[#0F172A] shadow-sm hover:bg-[#8CFF3F] active:bg-[#7EF22F] transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
         >
           <Plus className="h-4 w-4" /> New Job
         </Link>
@@ -207,9 +206,8 @@ export default async function DashboardPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                  <div className="flex-shrink-0">
                     <StatusBadge status={job.status} />
-                    <JobCategoryBadge category={job.jobCategory} />
                   </div>
                 </Link>
               ))

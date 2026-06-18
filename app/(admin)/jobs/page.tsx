@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { formatDate, formatTime, JOB_STATUSES, JOB_CATEGORIES, JOB_STATUS_CHIP_COLOR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -108,7 +107,7 @@ export default function JobsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Jobs</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Jobs</h1>
           <p className="text-slate-500 text-sm mt-0.5">{filtered.length} of {jobs.length} jobs</p>
         </div>
         <div className="flex items-center gap-2">
@@ -205,11 +204,10 @@ export default function JobsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {job.technician && (
-                      <span className="inline-flex items-center gap-1 text-sm font-semibold rounded-full border px-3 py-1 text-white" style={{ backgroundColor: job.technician.color, borderColor: job.technician.color }}>
-                        <HardHat className="h-3.5 w-3.5" />{job.technician.name.split(" ")[0]}
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold rounded-md px-2 py-1 text-white" style={{ backgroundColor: job.technician.color }}>
+                        <HardHat className="h-3 w-3" />{job.technician.name.split(" ")[0]}
                       </span>
                     )}
-                    <JobCategoryBadge category={job.jobCategory} />
                     <StatusBadge status={job.status} />
                     <button onClick={() => openEdit(job)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-[#16A34A] hover:underline ml-1 font-medium">

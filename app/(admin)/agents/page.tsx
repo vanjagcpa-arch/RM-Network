@@ -232,12 +232,12 @@ export default function AgentsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Agents</h1>
+          <h1 className="text-3xl font-bold text-slate-900 font-cabinet">Agents</h1>
           <p className="text-slate-500 text-sm mt-1">Manage property manager accounts and their property assignments</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 rounded-lg bg-[#9CFF5F] px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors shadow-sm"
+          className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm"
         >
           <UserPlus className="h-4 w-4" /> Add agent
         </button>
