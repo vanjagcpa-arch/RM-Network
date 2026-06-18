@@ -16,8 +16,20 @@ export const adminUsers = pgTable("admin_users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const buildings = pgTable("buildings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  address: text("address").notNull(),
+  suburb: varchar("suburb", { length: 100 }),
+  state: varchar("state", { length: 10 }),
+  postcode: varchar("postcode", { length: 10 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const properties = pgTable("properties", {
   id: uuid("id").defaultRandom().primaryKey(),
+  buildingId: uuid("building_id").references(() => buildings.id),
   name: varchar("name", { length: 255 }).notNull(),
   address: text("address").notNull(),
   suburb: varchar("suburb", { length: 100 }),
@@ -110,6 +122,8 @@ export const jobTemplates = pgTable("job_templates", {
 });
 
 export type AdminUser = typeof adminUsers.$inferSelect;
+export type Building = typeof buildings.$inferSelect;
+export type NewBuilding = typeof buildings.$inferInsert;
 export type Property = typeof properties.$inferSelect;
 export type Technician = typeof technicians.$inferSelect;
 export type Job = typeof jobs.$inferSelect;

@@ -16,13 +16,15 @@ import {
   HardHat,
   ShieldCheck,
   LayoutTemplate,
+  Home,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/jobs", label: "Jobs", icon: ClipboardList },
-  { href: "/properties", label: "Properties", icon: Building2 },
+  { href: "/buildings", label: "Buildings", icon: Building2 },
+  { href: "/properties", label: "Units / Properties", icon: Home },
   { href: "/technicians", label: "Technicians", icon: HardHat },
   { href: "/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/compliance", label: "Compliance", icon: ShieldCheck },
