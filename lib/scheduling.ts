@@ -1,8 +1,10 @@
 interface NearbyJob {
   scheduledDate: string | null;
   propertyId: string;
+  buildingId?: string | null;
   suburb: string | null | undefined;
   postcode: string | null | undefined;
+  technicianId?: string | null;
 }
 
 export interface RecommendedDate {
@@ -10,10 +12,18 @@ export interface RecommendedDate {
   score: number;
   reason: string;
   jobCount: number;
+  buildingJobCount: number;
+  technicianJobCount: number;
 }
 
 export function getSmartRecommendations(
-  target: { id: string; suburb: string | null | undefined; postcode: string | null | undefined },
+  target: {
+    id: string;
+    buildingId?: string | null;
+    suburb: string | null | undefined;
+    postcode: string | null | undefined;
+    preferredTechnicianId?: string | null;
+  },
   existingJobs: NearbyJob[],
   daysAhead = 30
 ): RecommendedDate[] {
@@ -39,9 +49,17 @@ export function getSmartRecommendations(
   for (const [date, jobs] of byDate) {
     let score = 0;
     const reasons = new Set<string>();
+    let buildingJobCount = 0;
+    let technicianJobCount = 0;
 
     for (const job of jobs) {
-      if (job.propertyId === target.id) {
+      // Same building — technician is already on-site, highest value
+      if (target.buildingId && job.buildingId && job.buildingId === target.buildingId) {
+        score += 200;
+        buildingJobCount++;
+        reasons.add("Jobs already scheduled at this building");
+      } else if (job.propertyId === target.id) {
+        // Same property
         score += 100;
         reasons.add("Other jobs at this property");
       } else if (target.suburb && job.suburb === target.suburb) {
@@ -51,6 +69,13 @@ export function getSmartRecommendations(
         score += 25;
         reasons.add(`Jobs in same postcode (${target.postcode})`);
       }
+
+      // Preferred technician already working this day — cluster their route
+      if (target.preferredTechnicianId && job.technicianId === target.preferredTechnicianId) {
+        score += 30;
+        technicianJobCount++;
+        reasons.add("Technician already working this day");
+      }
     }
 
     if (score > 0) {
@@ -59,6 +84,8 @@ export function getSmartRecommendations(
         score,
         reason: [...reasons].join(" · "),
         jobCount: jobs.length,
+        buildingJobCount,
+        technicianJobCount,
       });
     }
   }
