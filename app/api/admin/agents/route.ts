@@ -70,11 +70,11 @@ export async function POST(req: NextRequest) {
       agencyName: agent.agencyName,
     }, { status: 201 });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "";
+    const msg = err instanceof Error ? err.message : String(err);
     if (msg.includes("unique") || msg.includes("duplicate") || msg.includes("already exists")) {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
     }
     console.error("POST /api/admin/agents", err);
-    return NextResponse.json({ error: "Failed to create agent" }, { status: 500 });
+    return NextResponse.json({ error: `Failed to create agent — ${msg}` }, { status: 500 });
   }
 }
