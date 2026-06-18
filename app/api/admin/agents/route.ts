@@ -70,11 +70,19 @@ export async function POST(req: NextRequest) {
       agencyName: agent.agencyName,
     }, { status: 201 });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes("unique") || msg.includes("duplicate") || msg.includes("already exists")) {
+    // Drizzle wraps the real PG error inside err.cause — check all layers
+    const drizzleMsg = err instanceof Error ? err.message : String(err);
+    const cause = err instanceof Error ? err.cause : undefined;
+    const causeMsg = cause instanceof Error ? cause.message : typeof cause === "string" ? cause : "";
+    const causeCode = (cause as { code?: string } | undefined)?.code ?? "";
+    const causeDetail = (cause as { detail?: string } | undefined)?.detail ?? "";
+    const combined = `${drizzleMsg} ${causeMsg} ${causeDetail} ${causeCode}`.toLowerCase();
+
+    if (combined.includes("unique") || combined.includes("duplicate") || combined.includes("already exists") || causeCode === "23505") {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
     }
+    const displayErr = causeDetail || causeMsg || drizzleMsg;
     console.error("POST /api/admin/agents", err);
-    return NextResponse.json({ error: `Failed to create agent — ${msg}` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to create agent — ${displayErr}` }, { status: 500 });
   }
 }
