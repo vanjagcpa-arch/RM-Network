@@ -97,50 +97,60 @@ export default function JobsPage() {
     return true;
   });
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const counts = Object.fromEntries(
+    Object.keys(JOB_STATUSES).map((k) => [k, jobs.filter((j) => j.status === k).length])
+  );
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Jobs</h1>
-          <p className="text-slate-500 text-sm mt-0.5">{jobs.length} total jobs</p>
+          <p className="text-slate-500 text-sm mt-0.5">{filtered.length} of {jobs.length} jobs</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <button className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
-              <Download className="h-4 w-4" />
-              Export
-            </button>
-            <div className="absolute right-0 top-full mt-1 w-40 rounded-lg border border-slate-200 bg-white shadow-lg py-1 z-10 hidden group-hover:block">
-              <button onClick={() => handleExport("xlsx")} className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50">Excel (.xlsx)</button>
-              <button onClick={() => handleExport("csv")} className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50">CSV for Ascora</button>
-            </div>
-          </div>
-          <div className="flex gap-1.5">
-            <Button variant="outline" size="sm" onClick={() => handleExport("xlsx")}>
-              <Download className="h-3.5 w-3.5" /> Excel
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handleExport("csv")}>
-              <ExternalLink className="h-3.5 w-3.5" /> Ascora CSV
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={() => handleExport("xlsx")}>
+            <Download className="h-3.5 w-3.5" /> Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handleExport("csv")}>
+            <ExternalLink className="h-3.5 w-3.5" /> Ascora CSV
+          </Button>
           <Link href="/jobs/new">
             <Button><Plus className="h-4 w-4" /> New Job</Button>
           </Link>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Status pill tabs */}
+      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+        <button
+          onClick={() => setFilterStatus("")}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterStatus === "" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+        >
+          All <span className="ml-1 opacity-60">{jobs.length}</span>
+        </button>
+        {Object.entries(JOB_STATUSES).map(([k, v]) => (
+          <button
+            key={k}
+            onClick={() => setFilterStatus(filterStatus === k ? "" : k)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${filterStatus === k ? v.color : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${v.dot}`} />
+            {v.label}
+            {counts[k] > 0 && <span className="opacity-60">{counts[k]}</span>}
+          </button>
+        ))}
+      </div>
+
+      {/* Secondary filters */}
       <div className="flex flex-wrap items-center gap-3 mb-5">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search jobs…"
             className="pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56" />
         </div>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">All statuses</option>
-          {Object.entries(JOB_STATUSES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-        </select>
         <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
           className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">All job types</option>
@@ -151,57 +161,63 @@ export default function JobsPage() {
           <option value="">All technicians</option>
           {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
         </select>
-        {(filterStatus || filterCategory || filterTechnician || search) && (
-          <button onClick={() => { setFilterStatus(""); setFilterCategory(""); setFilterTechnician(""); setSearch(""); }} className="text-sm text-slate-500 hover:text-slate-900">
-            Clear filters
+        {(filterCategory || filterTechnician || search) && (
+          <button onClick={() => { setFilterCategory(""); setFilterTechnician(""); setSearch(""); }} className="text-sm text-slate-400 hover:text-slate-700 transition-colors">
+            Clear
           </button>
         )}
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>
+        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-slate-300" /></div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
           <ClipboardList className="h-12 w-12 text-slate-200 mx-auto mb-3" />
-          <p className="text-slate-500">No jobs found</p>
+          <p className="text-slate-500 font-medium">No jobs found</p>
+          <p className="text-slate-400 text-sm mt-1">Try adjusting your filters</p>
           <Link href="/jobs/new"><Button className="mt-4">Create a job</Button></Link>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="divide-y divide-slate-100">
-            {filtered.map((job) => (
-              <div key={job.id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-semibold text-slate-900">{job.title}</p>
-                    {job.unitNumber && <span className="text-xs text-slate-500">Unit {job.unitNumber}</span>}
+            {filtered.map((job) => {
+              const isOverdue = job.scheduledDate && job.scheduledDate < today && job.status !== "completed" && job.status !== "cancelled";
+              return (
+                <div key={job.id} className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group ${isOverdue ? "border-l-2 border-l-red-400" : ""}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{job.title}</p>
+                      {isOverdue && (
+                        <span className="flex-shrink-0 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">Overdue</span>
+                      )}
+                    </div>
+                    <div className="flex items-center flex-wrap gap-3 text-xs text-slate-400">
+                      <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{job.property?.name ?? "Unknown"}</span>
+                      {job.scheduledDate && (
+                        <span className={`flex items-center gap-1 ${isOverdue ? "text-red-500" : ""}`}>
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(job.scheduledDate)}{job.scheduledTimeStart && ` · ${formatTime(job.scheduledTimeStart)}`}
+                        </span>
+                      )}
+                      {job.tenantName && <span>Tenant: {job.tenantName}</span>}
+                    </div>
                   </div>
-                  <div className="flex items-center flex-wrap gap-3 text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{job.property?.name ?? "Unknown"}</span>
-                    {job.scheduledDate && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(job.scheduledDate)}{job.scheduledTimeStart && ` · ${formatTime(job.scheduledTimeStart)}`}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {job.technician && (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5 text-white" style={{ backgroundColor: job.technician.color }}>
+                        <HardHat className="h-3 w-3" />{job.technician.name.split(" ")[0]}
                       </span>
                     )}
-                    {job.tenantName && <span>Tenant: {job.tenantName}</span>}
+                    <JobCategoryBadge category={job.jobCategory} />
+                    <StatusBadge status={job.status} />
+                    <button onClick={() => openEdit(job)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 hover:underline ml-1 font-medium">
+                      Edit
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {job.technician && (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5 text-white" style={{ backgroundColor: job.technician.color }}>
-                      <HardHat className="h-3 w-3" />{job.technician.name.split(" ")[0]}
-                    </span>
-                  )}
-                  <JobCategoryBadge category={job.jobCategory} />
-                  <StatusBadge status={job.status} />
-                  <button onClick={() => openEdit(job)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 hover:underline ml-2">
-                    Edit
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
