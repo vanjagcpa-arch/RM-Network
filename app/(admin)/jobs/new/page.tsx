@@ -18,6 +18,14 @@ interface Property {
   postcode: string | null;
 }
 
+interface Technician {
+  id: string;
+  name: string;
+  color: string;
+  specialties: string | null;
+  isActive: boolean;
+}
+
 interface Recommendation {
   date: string;
   score: number;
@@ -31,6 +39,7 @@ function NewJobForm() {
   const defaultPropertyId = searchParams.get("propertyId") ?? "";
 
   const [properties, setProperties] = useState<Property[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loadingRec, setLoadingRec] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -48,10 +57,12 @@ function NewJobForm() {
     unitNumber: "",
     notes: "",
     status: "pending",
+    technicianId: "",
   });
 
   useEffect(() => {
     fetch("/api/properties").then((r) => r.json()).then(setProperties);
+    fetch("/api/technicians").then((r) => r.json()).then((data: Technician[]) => setTechnicians(data.filter((t) => t.isActive)));
   }, []);
 
   useEffect(() => {
@@ -128,14 +139,24 @@ function NewJobForm() {
               className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <div>
-            <Label>Status</Label>
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
-              className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="in_progress">In Progress</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Status</Label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="in_progress">In Progress</option>
+              </select>
+            </div>
+            <div>
+              <Label>Assign technician</Label>
+              <select value={form.technicianId} onChange={(e) => setForm({ ...form, technicianId: e.target.value })}
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Unassigned</option>
+                {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
           </div>
         </div>
 

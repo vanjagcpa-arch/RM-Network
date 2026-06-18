@@ -13,6 +13,7 @@ import {
   LogOut,
   Wrench,
   ChevronRight,
+  HardHat,
 } from "lucide-react";
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/jobs", label: "Jobs", icon: ClipboardList },
   { href: "/properties", label: "Properties", icon: Building2 },
+  { href: "/technicians", label: "Technicians", icon: HardHat },
   { href: "/links", label: "Booking Links", icon: Link2 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

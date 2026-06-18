@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { jobs, properties } from "@/db/schema";
+import { jobs, properties, technicians } from "@/db/schema";
 import { getSession } from "@/lib/auth";
 import { desc, eq } from "drizzle-orm";
 
@@ -12,8 +12,9 @@ export async function GET(req: NextRequest) {
   const propertyId = url.searchParams.get("propertyId");
   const status = url.searchParams.get("status");
   const month = url.searchParams.get("month"); // YYYY-MM
+  const technicianId = url.searchParams.get("technicianId");
 
-  let query = db
+  const rows = await db
     .select({
       job: jobs,
       property: {
@@ -26,23 +27,28 @@ export async function GET(req: NextRequest) {
         contactName: properties.contactName,
         contactPhone: properties.contactPhone,
       },
+      technician: {
+        id: technicians.id,
+        name: technicians.name,
+        color: technicians.color,
+      },
     })
     .from(jobs)
     .leftJoin(properties, eq(jobs.propertyId, properties.id))
-    .orderBy(desc(jobs.createdAt))
-    .$dynamic();
-
-  const rows = await query;
+    .leftJoin(technicians, eq(jobs.technicianId, technicians.id))
+    .orderBy(desc(jobs.createdAt));
 
   let filtered = rows;
   if (propertyId) filtered = filtered.filter((r) => r.job.propertyId === propertyId);
   if (status) filtered = filtered.filter((r) => r.job.status === status);
   if (month) filtered = filtered.filter((r) => r.job.scheduledDate?.startsWith(month));
+  if (technicianId) filtered = filtered.filter((r) => r.job.technicianId === technicianId);
 
   return NextResponse.json(
     filtered.map((r) => ({
       ...r.job,
       property: r.property,
+      technician: r.technician?.id ? r.technician : null,
     }))
   );
 }
@@ -52,7 +58,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { propertyId, jobCategory, title, description, status, scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes } = body;
+  const { propertyId, jobCategory, title, description, status, scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes, technicianId } = body;
 
   if (!propertyId || !jobCategory || !title) {
     return NextResponse.json({ error: "propertyId, jobCategory, and title required" }, { status: 400 });
@@ -60,7 +66,7 @@ export async function POST(req: NextRequest) {
 
   const [job] = await db
     .insert(jobs)
-    .values({ propertyId, jobCategory, title, description, status: status ?? "pending", scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes })
+    .values({ propertyId, jobCategory, title, description, status: status ?? "pending", scheduledDate, scheduledTimeStart, scheduledTimeEnd, tenantName, tenantEmail, tenantPhone, unitNumber, notes, technicianId: technicianId || null })
     .returning();
 
   return NextResponse.json(job, { status: 201 });
