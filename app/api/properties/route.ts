@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, address, suburb, postcode, state, contactName, contactEmail, contactPhone, notes } = body;
+  const { name, address, suburb, postcode, state, contactName, contactEmail, contactPhone, notes, buildingId } = body;
 
   if (!name || !address) {
     return NextResponse.json({ error: "Name and address required" }, { status: 400 });
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   const [prop] = await db
     .insert(properties)
-    .values({ name, address, suburb, postcode, state, contactName, contactEmail, contactPhone, notes })
+    .values({ name, address, suburb, postcode, state, contactName, contactEmail, contactPhone, notes, buildingId: buildingId || null })
     .returning();
 
   return NextResponse.json(prop, { status: 201 });

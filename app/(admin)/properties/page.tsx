@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Building2, Plus, Search, MapPin, Phone, Mail, ChevronRight, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Suspense } from "react";
 
 interface Property {
   id: string;
@@ -21,13 +23,15 @@ interface Property {
   notes: string | null;
 }
 
-export default function PropertiesPage() {
+function PropertiesPageInner() {
+  const searchParams = useSearchParams();
+  const defaultBuildingId = searchParams.get("buildingId") ?? "";
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [showNew, setShowNew] = useState(false);
+  const [showNew, setShowNew] = useState(!!defaultBuildingId);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: "", address: "", suburb: "", postcode: "", state: "VIC", contactName: "", contactEmail: "", contactPhone: "", notes: "" });
+  const [form, setForm] = useState({ name: "", address: "", suburb: "", postcode: "", state: "VIC", contactName: "", contactEmail: "", contactPhone: "", notes: "", buildingId: defaultBuildingId });
 
   async function loadProperties() {
     const res = await fetch("/api/properties");
@@ -43,7 +47,7 @@ export default function PropertiesPage() {
     setSaving(true);
     await fetch("/api/properties", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     setShowNew(false);
-    setForm({ name: "", address: "", suburb: "", postcode: "", state: "VIC", contactName: "", contactEmail: "", contactPhone: "", notes: "" });
+    setForm({ name: "", address: "", suburb: "", postcode: "", state: "VIC", contactName: "", contactEmail: "", contactPhone: "", notes: "", buildingId: defaultBuildingId });
     await loadProperties();
     setSaving(false);
   }
@@ -123,7 +127,7 @@ export default function PropertiesPage() {
         </div>
       )}
 
-      {/* New property dialog */}
+      {/* Add unit / property dialog */}
       <Dialog open={showNew} onOpenChange={setShowNew}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -131,9 +135,14 @@ export default function PropertiesPage() {
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-4 mt-2">
             <div className="grid grid-cols-1 gap-4">
+              {defaultBuildingId && (
+                <p className="text-xs text-blue-600 bg-blue-50 rounded-lg px-3 py-2">
+                  This unit will be linked to its building automatically.
+                </p>
+              )}
               <div>
-                <Label htmlFor="p-name">Property name *</Label>
-                <Input id="p-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. 42 Main Street Apartments" required className="mt-1" />
+                <Label htmlFor="p-name">Unit name *</Label>
+                <Input id="p-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Unit 12B" required className="mt-1" />
               </div>
               <div>
                 <Label htmlFor="p-address">Street address *</Label>
@@ -182,5 +191,13 @@ export default function PropertiesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense>
+      <PropertiesPageInner />
+    </Suspense>
   );
 }
