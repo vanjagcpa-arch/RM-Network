@@ -116,3 +116,54 @@ export async function sendJobConfirmationEmail(
     }),
   });
 }
+
+export async function sendBookingRequestEmail(
+  tenant: { email: string; name?: string | null },
+  property: { name: string; address: string; suburb?: string | null },
+  bookingUrl: string,
+  jobTypeLabel: string
+): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const from = process.env.FROM_EMAIL ?? "RM Scheduler <noreply@rmscheduler.app>";
+  const greeting = tenant.name ? `Hi ${tenant.name},` : "Hello,";
+  const expiryNote = "This link expires in 7 days.";
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#0f172a">
+  <div style="background:linear-gradient(135deg,#1e293b,#334155);border-radius:12px;padding:24px;color:#fff;margin-bottom:24px">
+    <p style="margin:0 0 4px;font-size:12px;opacity:.7;text-transform:uppercase;letter-spacing:.05em">Appointment Request</p>
+    <h1 style="margin:0;font-size:20px">${jobTypeLabel}</h1>
+    <p style="margin:8px 0 0;font-size:14px;opacity:.8">${property.name}</p>
+  </div>
+  <p style="font-size:15px">${greeting}</p>
+  <p style="font-size:15px">Your property manager has requested to schedule a <strong>${jobTypeLabel}</strong> at <strong>${property.name}</strong> (${property.address}${property.suburb ? `, ${property.suburb}` : ""}).</p>
+  <p style="font-size:15px">Please click the button below to choose a date and time that suits you.</p>
+  <div style="text-align:center;margin:28px 0">
+    <a href="${bookingUrl}" style="display:inline-block;background:#2563eb;border-radius:8px;padding:14px 28px;font-size:15px;font-weight:600;color:#fff;text-decoration:none">
+      Choose your appointment time →
+    </a>
+  </div>
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:20px 0">
+    <table style="width:100%;font-size:14px;border-collapse:collapse">
+      <tr><td style="padding:4px 0;color:#64748b;width:110px">Property</td><td style="padding:4px 0;font-weight:600">${property.name}</td></tr>
+      <tr><td style="padding:4px 0;color:#64748b">Service</td><td style="padding:4px 0">${jobTypeLabel}</td></tr>
+    </table>
+  </div>
+  <p style="font-size:13px;color:#64748b">${expiryNote} If you have any questions, please contact your property manager directly.</p>
+  <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+  <p style="font-size:12px;color:#94a3b8;margin:0">This is an automated message from RM Scheduler.</p>
+</body></html>`;
+
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from,
+      to: tenant.email,
+      subject: `Action required: Schedule your ${jobTypeLabel} at ${property.name}`,
+      html,
+    }),
+  });
+}

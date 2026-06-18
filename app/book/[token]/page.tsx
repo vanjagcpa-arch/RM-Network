@@ -168,6 +168,7 @@ export default function BookingPage() {
 
         {/* Property info */}
         <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm mb-5">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Service location</p>
           <div className="flex items-start gap-3">
             <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
               <Home className="h-4 w-4 text-blue-600" />
@@ -252,6 +253,9 @@ export default function BookingPage() {
               <User className="h-4 w-4 text-blue-600" />
               <h2 className="text-sm font-semibold text-slate-900">Your details</h2>
             </div>
+            <p className="text-xs text-slate-400 -mt-2">
+              We already have the service address above — just tell us who you are and how to reach you.
+            </p>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
@@ -259,7 +263,7 @@ export default function BookingPage() {
                 <Input value={form.tenantName} onChange={(e) => setForm((f) => ({ ...f, tenantName: e.target.value }))} placeholder="Your full name" required className="mt-1" />
               </div>
               <div>
-                <Label>Unit / apartment</Label>
+                <Label>Unit / apartment number</Label>
                 <Input value={form.unitNumber} onChange={(e) => setForm((f) => ({ ...f, unitNumber: e.target.value }))} placeholder="e.g. 5B" className="mt-1" />
               </div>
               <div>
@@ -267,14 +271,14 @@ export default function BookingPage() {
                 <Input value={form.tenantPhone} onChange={(e) => setForm((f) => ({ ...f, tenantPhone: e.target.value }))} placeholder="04xx xxx xxx" required className="mt-1" />
               </div>
               <div className="col-span-2">
-                <Label>Email</Label>
+                <Label>Email (optional — for confirmation)</Label>
                 <Input type="email" value={form.tenantEmail} onChange={(e) => setForm((f) => ({ ...f, tenantEmail: e.target.value }))} placeholder="your@email.com" className="mt-1" />
               </div>
             </div>
 
             <div>
-              <Label>Any special instructions?</Label>
-              <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={2} placeholder="Access code, parking info, pet warning…"
+              <Label>Access instructions or special requirements</Label>
+              <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={2} placeholder="e.g. Access code 1234, dog in yard, parking on street…"
                 className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
           </div>

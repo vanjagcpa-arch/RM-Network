@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const propertyId = url.searchParams.get("propertyId");
   const daysAhead = parseInt(url.searchParams.get("daysAhead") ?? "30");
+  const preferredTechnicianId = url.searchParams.get("technicianId") ?? null;
 
   if (!propertyId) return NextResponse.json({ error: "propertyId required" }, { status: 400 });
 
@@ -20,16 +21,24 @@ export async function GET(req: NextRequest) {
     .leftJoin(properties, eq(jobs.propertyId, properties.id));
 
   const nearbyJobs = allJobs
-    .filter((r) => r.job.scheduledDate && r.job.status !== "cancelled")
+    .filter((r) => r.job.scheduledDate && r.job.status !== "cancelled" && r.job.status !== "completed")
     .map((r) => ({
       scheduledDate: r.job.scheduledDate,
       propertyId: r.job.propertyId,
+      buildingId: r.property?.buildingId ?? null,
       suburb: r.property?.suburb,
       postcode: r.property?.postcode,
+      technicianId: r.job.technicianId ?? null,
     }));
 
   const recommendations = getSmartRecommendations(
-    { id: property.id, suburb: property.suburb, postcode: property.postcode },
+    {
+      id: property.id,
+      buildingId: property.buildingId ?? null,
+      suburb: property.suburb,
+      postcode: property.postcode,
+      preferredTechnicianId,
+    },
     nearbyJobs,
     daysAhead
   );
