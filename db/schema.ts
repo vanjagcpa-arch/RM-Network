@@ -6,6 +6,7 @@ import {
   boolean,
   integer,
   uuid,
+  date,
 } from "drizzle-orm/pg-core";
 
 export const adminUsers = pgTable("admin_users", {
@@ -162,6 +163,24 @@ export const maintenanceRequests = pgTable("maintenance_requests", {
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const technicianBlockouts = pgTable("technician_blockouts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  technicianId: uuid("technician_id").notNull().references(() => technicians.id, { onDelete: "cascade" }),
+  blockDate: date("block_date").notNull(),
+  reason: text("reason"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const maintenanceRequestComments = pgTable("maintenance_request_comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id").notNull().references(() => maintenanceRequests.id, { onDelete: "cascade" }),
+  authorId: uuid("author_id").notNull().references(() => adminUsers.id),
+  authorName: text("author_name").notNull(),
+  authorRole: text("author_role").notNull().default("admin"),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export type AdminUser = typeof adminUsers.$inferSelect;
