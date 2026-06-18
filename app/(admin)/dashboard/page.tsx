@@ -74,7 +74,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/jobs/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 active:bg-blue-800 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#9CFF5F] px-4 py-2.5 text-sm font-semibold text-[#0F172A] shadow-sm hover:bg-[#8CFF3F] active:bg-[#7EF22F] transition-colors"
         >
           <Plus className="h-4 w-4" /> New Job
         </Link>
@@ -85,8 +85,8 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Jobs</span>
-            <div className="rounded-lg bg-blue-50 p-2">
-              <ClipboardList className="h-4 w-4 text-blue-600" />
+            <div className="rounded-lg bg-[#ECFDE8] p-2">
+              <ClipboardList className="h-4 w-4 text-[#16A34A]" />
             </div>
           </div>
           <p className="text-3xl font-bold text-slate-900">{active}</p>
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-blue-600" />
+              <CalendarDays className="h-4 w-4 text-[#16A34A]" />
               <h2 className="text-sm font-semibold text-slate-900">Today&apos;s Schedule</h2>
             </div>
             <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
               <div className="px-5 py-10 text-center">
                 <CalendarDays className="h-8 w-8 text-slate-200 mx-auto mb-2.5" />
                 <p className="text-sm text-slate-500">No jobs scheduled for today</p>
-                <Link href="/jobs/new" className="mt-3 inline-block text-sm text-blue-600 hover:underline font-medium">
+                <Link href="/jobs/new" className="mt-3 inline-block text-sm text-[#16A34A] hover:underline font-medium">
                   Schedule a job →
                 </Link>
               </div>
@@ -173,10 +173,10 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <TrendingUp className="h-4 w-4 text-[#16A34A]" />
               <h2 className="text-sm font-semibold text-slate-900">Recent Jobs</h2>
             </div>
-            <Link href="/jobs" className="text-xs text-blue-600 hover:underline flex items-center gap-0.5 font-medium">
+            <Link href="/jobs" className="text-xs text-[#16A34A] hover:underline flex items-center gap-0.5 font-medium">
               View all <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
             {recentJobs.length === 0 ? (
               <div className="px-5 py-10 text-center">
                 <p className="text-sm text-slate-500">No jobs yet</p>
-                <Link href="/jobs/new" className="mt-2 inline-block text-sm text-blue-600 hover:underline font-medium">
+                <Link href="/jobs/new" className="mt-2 inline-block text-sm text-[#16A34A] hover:underline font-medium">
                   Create your first job →
                 </Link>
               </div>

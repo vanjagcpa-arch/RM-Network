@@ -129,10 +129,10 @@ export default function CalendarPage() {
                 <div
                   key={day}
                   onClick={() => setSelectedDay(isSelected ? null : ds)}
-                  className={`min-h-[100px] border-b border-r border-slate-100 p-2 cursor-pointer transition-colors ${isSelected ? "bg-blue-50 border-blue-200" : "hover:bg-slate-50"} ${(i + firstDay) % 7 === 6 ? "border-r-0" : ""}`}
+                  className={`min-h-[100px] border-b border-r border-slate-100 p-2 cursor-pointer transition-colors ${isSelected ? "bg-[#ECFDE8] border-[#CFF8C8]" : "hover:bg-slate-50"} ${(i + firstDay) % 7 === 6 ? "border-r-0" : ""}`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-blue-600 text-white" : isSelected ? "text-blue-700" : "text-slate-700"}`}>
+                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-[#9CFF5F] text-[#0F172A]" : isSelected ? "text-[#16A34A]" : "text-slate-700"}`}>
                       {day}
                     </span>
                     {dayJobs.length > 0 && (
@@ -200,7 +200,7 @@ export default function CalendarPage() {
                     <button
                       key={id}
                       onClick={() => setPanelTab(id)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2 ${panelTab === id ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2 ${panelTab === id ? "border-[#16A34A] text-[#16A34A]" : "border-transparent text-slate-500 hover:text-slate-700"}`}
                     >
                       <Icon className="h-3.5 w-3.5" />
                       {label}
@@ -294,7 +294,7 @@ function RoutePanel({ jobs }: { jobs: Job[] }) {
       <div className="px-4 py-3 border-t border-slate-100">
         {mapsUrl ? (
           <a href={mapsUrl} target="_blank" rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors">
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#9CFF5F] px-3 py-2 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
             <ExternalLink className="h-3.5 w-3.5" /> Open route in Google Maps
           </a>
         ) : (

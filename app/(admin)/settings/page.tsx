@@ -43,11 +43,11 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-lg bg-blue-50 border border-blue-100 p-4">
-            <Info className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-800">
+          <div className="flex items-start gap-3 rounded-lg bg-[#ECFDE8] border border-[#CFF8C8] p-4">
+            <Info className="h-4 w-4 text-[#16A34A] flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-[#166534]">
               <p className="font-medium">How to import into Ascora</p>
-              <ol className="mt-1 space-y-1 list-decimal list-inside text-blue-700">
+              <ol className="mt-1 space-y-1 list-decimal list-inside text-[#166534]">
                 <li>Export jobs below as Excel or CSV</li>
                 <li>Open Ascora → Jobs → Import</li>
                 <li>Upload the downloaded file</li>
@@ -60,7 +60,7 @@ export default function SettingsPage() {
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-1">Filter by status</label>
               <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option value="">All statuses</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -70,7 +70,7 @@ export default function SettingsPage() {
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-1">Filter by job type</label>
               <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option value="">All job types</option>
                 {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
               </select>

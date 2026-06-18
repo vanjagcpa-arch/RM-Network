@@ -11,14 +11,14 @@ export type ChipColor =
   | "slate";
 
 export const CHIP_COLORS: Record<ChipColor, string> = {
-  amber:   "bg-amber-100 text-amber-700 border-amber-200",
-  blue:    "bg-blue-100 text-blue-700 border-blue-200",
-  emerald: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  green:   "bg-green-100 text-green-700 border-green-200",
-  red:     "bg-red-100 text-red-700 border-red-200",
-  orange:  "bg-orange-100 text-orange-700 border-orange-200",
-  purple:  "bg-purple-100 text-purple-700 border-purple-200",
-  slate:   "bg-slate-100 text-slate-600 border-slate-200",
+  amber:   "bg-amber-100 text-amber-700",
+  blue:    "bg-blue-100 text-blue-700",
+  emerald: "bg-emerald-100 text-emerald-700",
+  green:   "bg-green-100 text-green-700",
+  red:     "bg-red-100 text-red-700",
+  orange:  "bg-orange-100 text-orange-700",
+  purple:  "bg-purple-100 text-purple-700",
+  slate:   "bg-slate-100 text-slate-600",
 };
 
 interface ChipProps {
@@ -32,12 +32,12 @@ export function Chip({ label, color = "slate", icon: Icon, className }: ChipProp
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold",
+        "inline-flex items-center gap-1 rounded-[8px] px-[9px] py-[5px] text-xs font-semibold",
         CHIP_COLORS[color],
         className
       )}
     >
-      {Icon && <Icon className="h-3.5 w-3.5 flex-shrink-0" />}
+      {Icon && <Icon className="h-3 w-3 flex-shrink-0" />}
       {label}
     </span>
   );
@@ -67,9 +67,9 @@ export function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-all",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all",
         selected
-          ? "bg-slate-900 text-white border-slate-900"
+          ? "bg-slate-900 text-white"
           : cn(CHIP_COLORS[color], "hover:opacity-80"),
         className
       )}

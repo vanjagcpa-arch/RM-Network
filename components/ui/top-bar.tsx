@@ -42,17 +42,12 @@ function getInitials(name: string) {
 interface TopBarProps {
   userName: string;
   userRole?: string;
-  accent?: "blue" | "emerald";
 }
 
-export function TopBar({ userName, userRole = "admin", accent = "blue" }: TopBarProps) {
+export function TopBar({ userName, userRole = "admin" }: TopBarProps) {
   const pathname = usePathname();
   const { section, page } = getBreadcrumb(pathname);
 
-  const avatarBg = accent === "emerald" ? "bg-emerald-600" : "bg-blue-600";
-  const roleBg = accent === "emerald"
-    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-    : "bg-blue-50 text-blue-700 border-blue-200";
   const roleLabel = userRole === "agent" ? "Agent" : "Admin";
 
   return (
@@ -72,12 +67,12 @@ export function TopBar({ userName, userRole = "admin", accent = "blue" }: TopBar
 
       {/* User */}
       <div className="flex items-center gap-2.5">
-        <span className={cn("inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold", roleBg)}>
+        <span className="inline-flex items-center rounded-full border border-[#CFF8C8] px-2.5 py-1 text-xs font-semibold bg-[#ECFDE8] text-[#16A34A]">
           {roleLabel}
         </span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-slate-700 hidden sm:block">{userName}</span>
-          <div className={cn("h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0", avatarBg)}>
+          <div className="h-8 w-8 rounded-full flex items-center justify-center text-[#0F172A] text-xs font-bold flex-shrink-0 bg-[#9CFF5F]">
             {getInitials(userName)}
           </div>
         </div>

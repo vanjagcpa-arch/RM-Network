@@ -90,7 +90,7 @@ function AvailabilityPanel({ technicianId }: { technicianId: string }) {
             type="date"
             value={blockDate}
             onChange={(e) => setBlockDate(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div className="flex-1">
@@ -100,13 +100,13 @@ function AvailabilityPanel({ technicianId }: { technicianId: string }) {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Annual leave"
-            className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <button
           onClick={addBlockout}
           disabled={!blockDate || saving}
-          className="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
         >
           {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
           Block date
@@ -322,12 +322,12 @@ export default function TechniciansPage() {
                   {tech.notes && <p className="text-xs text-slate-400 mb-3 line-clamp-2">{tech.notes}</p>}
 
                   <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-                    <button onClick={() => openEdit(tech)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 transition-colors">
+                    <button onClick={() => openEdit(tech)} className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#16A34A] transition-colors">
                       <Pencil className="h-3.5 w-3.5" /> Edit
                     </button>
                     <button
                       onClick={() => setExpandedAvail(availOpen ? null : tech.id)}
-                      className={`flex items-center gap-1 text-xs transition-colors ${availOpen ? "text-blue-600" : "text-slate-600 hover:text-blue-600"}`}
+                      className={`flex items-center gap-1 text-xs transition-colors ${availOpen ? "text-[#16A34A]" : "text-slate-600 hover:text-[#16A34A]"}`}
                     >
                       <CalendarOff className="h-3.5 w-3.5" />
                       Availability
@@ -405,7 +405,7 @@ export default function TechniciansPage() {
             <div>
               <Label>Notes</Label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} placeholder="Any notes about this technician…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>
 
             <div className="flex justify-end gap-2 pt-1">

@@ -69,10 +69,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <ClipboardList className="h-4 w-4 text-blue-600" />
+                <ClipboardList className="h-4 w-4 text-[#16A34A]" />
                 <h2 className="text-sm font-semibold text-slate-900">Jobs ({propJobs.length})</h2>
               </div>
-              <Link href={`/jobs/new?propertyId=${property.id}`} className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline">
+              <Link href={`/jobs/new?propertyId=${property.id}`} className="inline-flex items-center gap-1.5 text-xs text-[#16A34A] hover:underline">
                 <Plus className="h-3.5 w-3.5" /> New job
               </Link>
             </div>
@@ -105,15 +105,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Link2 className="h-4 w-4 text-blue-600" />
+                <Link2 className="h-4 w-4 text-[#16A34A]" />
                 <h2 className="text-sm font-semibold text-slate-900">Booking Links ({propLinks.length})</h2>
               </div>
-              <Link href={`/links?propertyId=${property.id}`} className="text-xs text-blue-600 hover:underline">Manage →</Link>
+              <Link href={`/links?propertyId=${property.id}`} className="text-xs text-[#16A34A] hover:underline">Manage →</Link>
             </div>
             {propLinks.length === 0 ? (
               <div className="px-5 py-6 text-center text-sm text-slate-500">
                 No booking links yet.{" "}
-                <Link href="/links" className="text-blue-600 hover:underline">Create one →</Link>
+                <Link href="/links" className="text-[#16A34A] hover:underline">Create one →</Link>
               </div>
             ) : (
               <div className="divide-y divide-slate-50">

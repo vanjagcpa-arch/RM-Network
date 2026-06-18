@@ -111,7 +111,7 @@ export default function BookingPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#16A34A] mx-auto mb-3" />
           <p className="text-slate-600">Loading booking page…</p>
         </div>
       </div>
@@ -161,8 +161,8 @@ export default function BookingPage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-200 mb-4">
-            <Wrench className="h-7 w-7 text-white" />
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#9CFF5F] shadow-lg mb-4">
+            <Wrench className="h-7 w-7 text-[#0F172A]" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Book a Service</h1>
           <p className="text-slate-500 mt-1">{linkInfo?.label ?? "Schedule your maintenance appointment"}</p>
@@ -172,8 +172,8 @@ export default function BookingPage() {
         <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm mb-5">
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Service location</p>
           <div className="flex items-start gap-3">
-            <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <Home className="h-4 w-4 text-blue-600" />
+            <div className="h-9 w-9 rounded-lg bg-[#ECFDE8] flex items-center justify-center flex-shrink-0">
+              <Home className="h-4 w-4 text-[#16A34A]" />
             </div>
             <div>
               <p className="font-semibold text-slate-900 text-sm">{linkInfo?.propertyName}</p>
@@ -193,7 +193,7 @@ export default function BookingPage() {
                     key={key}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, jobCategory: key }))}
-                    className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-all ${form.jobCategory === key ? "border-blue-500 bg-blue-50 shadow-sm" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"}`}
+                    className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-all ${form.jobCategory === key ? "border-green-500 bg-[#ECFDE8] shadow-sm" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"}`}
                   >
                     <span className={`h-2.5 w-2.5 rounded-full flex-shrink-0`} style={{ backgroundColor: cat.calColor }} />
                     <span className="text-sm font-medium text-slate-900">{cat.label}</span>
@@ -213,12 +213,12 @@ export default function BookingPage() {
           {/* Date selection */}
           <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-blue-600" />
+              <Calendar className="h-4 w-4 text-[#16A34A]" />
               <h2 className="text-sm font-semibold text-slate-900">Choose a date</h2>
             </div>
 
             {linkInfo?.allowedWeekdays && linkInfo.allowedWeekdays.length > 0 && (
-              <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-sm text-blue-700">
+              <div className="rounded-lg bg-[#ECFDE8] border border-[#CFF8C8] p-3 text-sm text-[#166534]">
                 Available days: <strong>{linkInfo.allowedWeekdays.map((d) => WEEKDAYS[d]).join(", ")}</strong>
               </div>
             )}
@@ -246,7 +246,7 @@ export default function BookingPage() {
             <div>
               <Label>Preferred time (optional)</Label>
               {linkInfo?.allowedTimeStart && linkInfo.allowedTimeEnd && (
-                <p className="text-xs text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-1.5 mt-1 mb-1.5">
+                <p className="text-xs text-[#166534] bg-[#ECFDE8] border border-[#CFF8C8] rounded-lg px-3 py-1.5 mt-1 mb-1.5">
                   Available times: <strong>{new Date(`2000-01-01T${linkInfo.allowedTimeStart}`).toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" })}</strong> – <strong>{new Date(`2000-01-01T${linkInfo.allowedTimeEnd}`).toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" })}</strong>
                 </p>
               )}
@@ -264,7 +264,7 @@ export default function BookingPage() {
           {/* Contact details */}
           <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-blue-600" />
+              <User className="h-4 w-4 text-[#16A34A]" />
               <h2 className="text-sm font-semibold text-slate-900">Your details</h2>
             </div>
             <p className="text-xs text-slate-400 -mt-2">
@@ -293,7 +293,7 @@ export default function BookingPage() {
             <div>
               <Label>Access instructions or special requirements</Label>
               <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} rows={2} placeholder="e.g. Access code 1234, dog in yard, parking on street…"
-                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>
           </div>
 

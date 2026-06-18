@@ -75,7 +75,7 @@ function PropertiesPageInner() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search properties…"
-          className="w-full max-w-sm pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full max-w-sm pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
@@ -91,11 +91,11 @@ function PropertiesPageInner() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((property) => (
             <Link key={property.id} href={`/properties/${property.id}`}
-              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group">
+              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-green-200 transition-all group">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="h-4 w-4 text-blue-600" />
+                  <div className="h-9 w-9 rounded-lg bg-[#ECFDE8] flex items-center justify-center flex-shrink-0">
+                    <Building2 className="h-4 w-4 text-[#16A34A]" />
                   </div>
                   <h3 className="font-semibold text-slate-900 leading-tight">{property.name}</h3>
                 </div>
@@ -120,7 +120,7 @@ function PropertiesPageInner() {
                 )}
               </div>
               <div className="mt-3 pt-3 border-t border-slate-100">
-                <span className="text-xs text-blue-600 font-medium group-hover:underline">View jobs & booking links →</span>
+                <span className="text-xs text-[#16A34A] font-medium group-hover:underline">View jobs & booking links →</span>
               </div>
             </Link>
           ))}
@@ -136,7 +136,7 @@ function PropertiesPageInner() {
           <form onSubmit={handleCreate} className="space-y-4 mt-2">
             <div className="grid grid-cols-1 gap-4">
               {defaultBuildingId && (
-                <p className="text-xs text-blue-600 bg-blue-50 rounded-lg px-3 py-2">
+                <p className="text-xs text-[#16A34A] bg-[#ECFDE8] rounded-lg px-3 py-2">
                   This unit will be linked to its building automatically.
                 </p>
               )}
@@ -180,7 +180,7 @@ function PropertiesPageInner() {
               <div>
                 <Label>Notes</Label>
                 <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Access instructions, special requirements…" rows={3}
-                  className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
+                  className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500" />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">

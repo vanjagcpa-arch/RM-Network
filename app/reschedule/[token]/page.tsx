@@ -78,7 +78,7 @@ export default function ReschedulePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#16A34A]" />
       </div>
     );
   }
@@ -134,8 +134,8 @@ export default function ReschedulePage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-200 mb-4">
-            <Wrench className="h-7 w-7 text-white" />
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#9CFF5F] shadow-lg mb-4">
+            <Wrench className="h-7 w-7 text-[#0F172A]" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Reschedule appointment</h1>
           <p className="text-slate-500 mt-1">Choose a new date and time for your service</p>
@@ -169,7 +169,7 @@ export default function ReschedulePage() {
         <form onSubmit={handleSubmit}>
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-5 space-y-4">
             <div className="flex items-center gap-2 mb-1">
-              <RefreshCw className="h-4 w-4 text-blue-600" />
+              <RefreshCw className="h-4 w-4 text-[#16A34A]" />
               <h2 className="text-sm font-semibold text-slate-900">New date & time</h2>
             </div>
             <div>

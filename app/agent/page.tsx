@@ -63,7 +63,7 @@ export default function AgentDashboard() {
             {[
               { label: "Properties", value: properties.length, icon: Building2, color: "text-emerald-600", bg: "bg-emerald-50" },
               { label: "Awaiting review", value: pending, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-              { label: "Booking link sent", value: sent, icon: ClipboardList, color: "text-blue-600", bg: "bg-blue-50" },
+              { label: "Booking link sent", value: sent, icon: ClipboardList, color: "text-[#16A34A]", bg: "bg-[#ECFDE8]" },
               { label: "Booked", value: booked, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
             ].map(({ label, value, icon: Icon, color, bg }) => (
               <div key={label} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">

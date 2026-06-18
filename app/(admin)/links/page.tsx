@@ -183,7 +183,7 @@ function LinksContent() {
             <div>
               <Label>Property *</Label>
               <select required value={form.propertyId} onChange={(e) => setForm({ ...form, propertyId: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option value="">Select property…</option>
                 {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
@@ -191,7 +191,7 @@ function LinksContent() {
             <div>
               <Label>Job type (optional)</Label>
               <select value={form.jobCategory} onChange={(e) => setForm({ ...form, jobCategory: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option value="">Tenant can choose…</option>
                 {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
               </select>
@@ -213,7 +213,7 @@ function LinksContent() {
                     key={day}
                     type="button"
                     onClick={() => toggleWeekday(i)}
-                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${form.allowedWeekdays.includes(i) ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                    className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${form.allowedWeekdays.includes(i) ? "bg-[#9CFF5F] text-[#0F172A]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
                   >
                     {day}
                   </button>

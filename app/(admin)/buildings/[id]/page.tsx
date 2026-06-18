@@ -101,8 +101,8 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Units", value: units.length, icon: Home, bg: "bg-slate-50", color: "text-slate-600" },
-          { label: "Active Jobs", value: totalActive, icon: ClipboardList, bg: "bg-blue-50", color: "text-blue-600" },
-          { label: "Upcoming", value: totalUpcoming, icon: Calendar, bg: "bg-blue-50", color: "text-blue-600" },
+          { label: "Active Jobs", value: totalActive, icon: ClipboardList, bg: "bg-[#ECFDE8]", color: "text-[#16A34A]" },
+          { label: "Upcoming", value: totalUpcoming, icon: Calendar, bg: "bg-[#ECFDE8]", color: "text-[#16A34A]" },
           { label: "Overdue", value: totalOverdue, icon: AlertCircle, bg: totalOverdue > 0 ? "bg-red-50" : "bg-slate-50", color: totalOverdue > 0 ? "text-red-600" : "text-slate-400" },
         ].map(({ label, value, icon: Icon, bg, color }) => (
           <div key={label} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
@@ -121,7 +121,7 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
           Units <span className="text-slate-400 font-normal text-sm">({units.length})</span>
         </h2>
         <Link href={`/properties?buildingId=${building.id}`}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-sm font-medium text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
           <Plus className="h-3.5 w-3.5" /> Add unit
         </Link>
       </div>
@@ -131,7 +131,7 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
           <Home className="h-10 w-10 text-slate-200 mx-auto mb-3" />
           <p className="text-slate-500 mb-4">No units linked to this building yet.</p>
           <Link href={`/properties?buildingId=${building.id}`}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">
+            className="inline-flex items-center gap-2 rounded-lg bg-[#9CFF5F] px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors">
             <Plus className="h-4 w-4" /> Add first unit
           </Link>
         </div>
@@ -198,9 +198,9 @@ function UnitRow({ unit, today, buildingId }: { unit: UnitWithStats; today: stri
       </span>
     );
   } else if (unit.upcoming > 0) {
-    statusDot = <span className="h-2.5 w-2.5 rounded-full bg-blue-500 flex-shrink-0 inline-block" />;
+    statusDot = <span className="h-2.5 w-2.5 rounded-full bg-[#16A34A] flex-shrink-0 inline-block" />;
     statusText = (
-      <span className="text-xs text-blue-600 flex items-center gap-1">
+      <span className="text-xs text-[#16A34A] flex items-center gap-1">
         <CheckCircle2 className="h-3 w-3" />
         Scheduled
       </span>
@@ -253,7 +253,7 @@ function UnitRow({ unit, today, buildingId }: { unit: UnitWithStats; today: stri
       </td>
       <td className="px-4 py-3 text-right">
         <Link href={`/properties/${unit.id}`}
-          className="inline-flex items-center gap-0.5 text-xs text-slate-400 hover:text-blue-600 transition-colors opacity-0 group-hover:opacity-100">
+          className="inline-flex items-center gap-0.5 text-xs text-slate-400 hover:text-[#16A34A] transition-colors opacity-0 group-hover:opacity-100">
           View <ChevronRight className="h-3 w-3" />
         </Link>
       </td>

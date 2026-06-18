@@ -150,15 +150,15 @@ export default function JobsPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search jobs…"
-            className="pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56" />
+            className="pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 w-56" />
         </div>
         <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
-          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
           <option value="">All job types</option>
           {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
         <select value={filterTechnician} onChange={(e) => setFilterTechnician(e.target.value)}
-          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
           <option value="">All technicians</option>
           {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
         </select>
@@ -212,7 +212,7 @@ export default function JobsPage() {
                     <JobCategoryBadge category={job.jobCategory} />
                     <StatusBadge status={job.status} />
                     <button onClick={() => openEdit(job)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 hover:underline ml-1 font-medium">
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-[#16A34A] hover:underline ml-1 font-medium">
                       Edit
                     </button>
                   </div>
@@ -238,7 +238,7 @@ export default function JobsPage() {
               <div>
                 <Label>Status</Label>
                 <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                   {Object.entries(JOB_STATUSES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                 </select>
               </div>
@@ -255,7 +255,7 @@ export default function JobsPage() {
               <div>
                 <Label>Assign technician</Label>
                 <select value={editForm.technicianId} onChange={(e) => setEditForm({ ...editForm, technicianId: e.target.value })}
-                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                   <option value="">Unassigned</option>
                   {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
@@ -263,7 +263,7 @@ export default function JobsPage() {
               <div>
                 <Label>Notes</Label>
                 <textarea value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} rows={3}
-                  className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setShowEdit(null)}>Cancel</Button>

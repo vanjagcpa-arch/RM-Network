@@ -123,12 +123,12 @@ function CommentsPanel({ requestId }: { requestId: string }) {
           rows={2}
           placeholder="Write a comment…"
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendComment(); }}
-          className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
         />
         <button
           onClick={sendComment}
           disabled={!content.trim() || sending}
-          className="self-end flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="self-end flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
         >
           {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
           Send
@@ -212,7 +212,7 @@ function ApproveModal({
                   key={i}
                   type="button"
                   onClick={() => toggleDay(i)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${allowedWeekdays.includes(i) ? "bg-[#9CFF5F] text-[#0F172A] border-[#9CFF5F]" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"}`}
                 >
                   {day}
                 </button>
@@ -230,7 +230,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeStart}
                   onChange={(e) => setAllowedTimeStart(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -239,7 +239,7 @@ function ApproveModal({
                   type="time"
                   value={allowedTimeEnd}
                   onChange={(e) => setAllowedTimeEnd(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
             </div>
@@ -253,7 +253,7 @@ function ApproveModal({
           <button
             onClick={submit}
             disabled={submitting || allowedWeekdays.length === 0 || !request.tenantEmail}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[#9CFF5F] px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Send booking link
@@ -459,7 +459,7 @@ export default function MaintenanceRequestsPage() {
                 type="checkbox"
                 checked={selected.size === pendingFiltered.length && pendingFiltered.length > 0}
                 onChange={toggleSelectAll}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="h-4 w-4 rounded border-slate-300 text-[#16A34A] focus:ring-green-500"
               />
               <span className="text-xs text-slate-500">Select all pending ({pendingFiltered.length})</span>
             </div>
@@ -485,7 +485,7 @@ export default function MaintenanceRequestsPage() {
                         checked={isSelected}
                         onChange={() => toggleSelect(r.id)}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded border-slate-300 text-[#16A34A] focus:ring-green-500"
                       />
                     </div>
                   )}
@@ -514,7 +514,7 @@ export default function MaintenanceRequestsPage() {
                       <>
                         <button
                           onClick={(e) => { e.stopPropagation(); setApproving(r); }}
-                          className="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                          className="flex items-center gap-1 rounded-lg bg-[#9CFF5F] px-3 py-1.5 text-xs font-semibold text-[#0F172A] hover:bg-[#8CFF3F] transition-colors"
                         >
                           <Check className="h-3.5 w-3.5" /> Approve
                         </button>
@@ -528,7 +528,7 @@ export default function MaintenanceRequestsPage() {
                     )}
                     <button
                       onClick={() => toggleComments(r.id)}
-                      className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition-colors ${commentsOpen ? "bg-blue-50 border-blue-200 text-blue-700" : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"}`}
+                      className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition-colors ${commentsOpen ? "bg-[#ECFDE8] border-[#CFF8C8] text-[#16A34A]" : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"}`}
                       title="Comments"
                     >
                       <MessageCircle className="h-3.5 w-3.5" />
@@ -614,7 +614,7 @@ export default function MaintenanceRequestsPage() {
                 <button
                   onClick={bulkApprove}
                   disabled={bulkWorking}
-                  className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="flex items-center gap-1.5 rounded-lg bg-[#9CFF5F] px-4 py-1.5 text-sm font-semibold text-[#0F172A] hover:bg-[#8CFF3F] disabled:opacity-50 transition-colors"
                 >
                   {bulkWorking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                   Approve {selected.size} selected
