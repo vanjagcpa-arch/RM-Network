@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, JOB_STATUSES } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowLeft, Sparkles, Calendar, RefreshCw, LayoutTemplate } from "lucide-react";
 import { Suspense } from "react";
@@ -188,9 +188,9 @@ function NewJobForm() {
               <Label>Status</Label>
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="in_progress">In Progress</option>
+                {(["pending", "confirmed", "in_progress"] as const).map((k) => (
+                  <option key={k} value={k}>{JOB_STATUSES[k].label}</option>
+                ))}
               </select>
             </div>
             <div>
