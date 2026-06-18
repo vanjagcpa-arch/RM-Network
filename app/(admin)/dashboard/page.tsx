@@ -65,7 +65,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">
             {greeting}, {session.name.split(" ")[0]}
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
               <CalendarDays className="h-4 w-4 text-blue-600" />
               <h2 className="text-sm font-semibold text-slate-900">Today&apos;s Schedule</h2>
             </div>
-            <span className="text-xs bg-slate-100 text-slate-600 rounded-full px-2 py-0.5 font-medium">
+            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
               {todayJobs.length} job{todayJobs.length !== 1 ? "s" : ""}
             </span>
           </div>

@@ -72,7 +72,7 @@ export function TopBar({ userName, userRole = "admin", accent = "blue" }: TopBar
 
       {/* User */}
       <div className="flex items-center gap-2.5">
-        <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold", roleBg)}>
+        <span className={cn("inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold", roleBg)}>
           {roleLabel}
         </span>
         <div className="flex items-center gap-2">

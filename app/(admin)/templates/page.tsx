@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, JOB_CATEGORY_CHIP_COLOR } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 import { Plus, Pencil, Trash2, Loader2, LayoutTemplate, RefreshCw, Clock } from "lucide-react";
 
 interface Template {
@@ -101,7 +102,7 @@ export default function TemplatesPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Job Templates</h1>
+          <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Job Templates</h1>
           <p className="text-slate-500 text-sm mt-0.5">Reusable job presets to speed up job creation</p>
         </div>
         <Button onClick={openNew}><Plus className="h-4 w-4" /> New template</Button>
@@ -125,7 +126,7 @@ export default function TemplatesPage() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-slate-900 truncate">{t.name}</h3>
-                    {cat && <span className={`inline-block text-xs px-2 py-0.5 rounded-full border font-medium mt-1 ${cat.color}`}>{cat.label}</span>}
+                    {cat && <Chip label={cat.label} color={JOB_CATEGORY_CHIP_COLOR[t.jobCategory] ?? "slate"} className="mt-1" />}
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 mb-2 font-mono truncate">"{t.titleTemplate}"</p>

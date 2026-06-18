@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Building2, ClipboardList, Clock, CheckCircle2, ChevronRight, Plus, Loader2 } from "lucide-react";
-import { JOB_CATEGORIES } from "@/lib/utils";
+import { JOB_CATEGORIES, REQUEST_STATUS_CHIP } from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
 
 interface Property {
   id: string;
@@ -23,12 +24,6 @@ interface Request {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
-  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
-  booked: { label: "Booked", color: "bg-emerald-100 text-emerald-700" },
-  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
-};
 
 export default function AgentDashboard() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -53,7 +48,7 @@ export default function AgentDashboard() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-slate-900 font-cabinet">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-1">Submit and track maintenance requests for your properties</p>
       </div>
 
@@ -102,9 +97,7 @@ export default function AgentDashboard() {
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                         {p.pendingRequests > 0 && (
-                          <span className="h-5 w-5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold flex items-center justify-center">
-                            {p.pendingRequests}
-                          </span>
+                          <Chip label={String(p.pendingRequests)} color="amber" className="px-2 py-0.5 text-xs" />
                         )}
                         <ChevronRight className="h-4 w-4 text-slate-300" />
                       </div>
@@ -132,15 +125,13 @@ export default function AgentDashboard() {
               ) : (
                 <div className="divide-y divide-slate-50">
                   {requests.slice(0, 5).map((r) => {
-                    const s = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending;
+                    const s = REQUEST_STATUS_CHIP[r.status] ?? REQUEST_STATUS_CHIP.pending;
                     const cat = JOB_CATEGORIES[r.jobCategory as keyof typeof JOB_CATEGORIES];
                     return (
                       <div key={r.id} className="px-5 py-3">
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className="text-sm font-medium text-slate-900 truncate">{r.title}</p>
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
-                            {s.label}
-                          </span>
+                          <Chip label={s.label} color={s.color} className="flex-shrink-0" />
                         </div>
                         <p className="text-xs text-slate-500">{r.propertyName} · {cat?.label ?? r.jobCategory}</p>
                       </div>
