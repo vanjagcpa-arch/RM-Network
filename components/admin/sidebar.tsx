@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   LayoutTemplate,
   Home,
+  Users,
+  Inbox,
 } from "lucide-react";
 
 const navSections = [
@@ -30,6 +32,7 @@ const navSections = [
     label: "OPERATIONS",
     items: [
       { href: "/jobs", label: "Jobs", icon: ClipboardList },
+      { href: "/maintenance-requests", label: "Maintenance Requests", icon: Inbox },
       { href: "/buildings", label: "Buildings", icon: Building2 },
       { href: "/properties", label: "Units / Properties", icon: Home },
     ],
@@ -38,6 +41,7 @@ const navSections = [
     label: "TEAM",
     items: [
       { href: "/technicians", label: "Technicians", icon: HardHat },
+      { href: "/agents", label: "Agents", icon: Users },
       { href: "/templates", label: "Templates", icon: LayoutTemplate },
       { href: "/compliance", label: "Compliance", icon: ShieldCheck },
     ],
@@ -62,26 +66,26 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-64 flex-col bg-slate-900 text-white">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-700/40">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-900/40 flex-shrink-0">
-          <Wrench className="h-4.5 w-4.5 text-white" />
+    <aside className="flex h-full w-60 flex-col bg-slate-900 text-white">
+      {/* Brand */}
+      <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 shadow-lg shadow-violet-900/50 flex-shrink-0">
+          <Wrench className="h-4 w-4 text-white" />
         </div>
         <div>
           <p className="text-sm font-bold tracking-tight text-white">RM Scheduler</p>
-          <p className="text-xs text-slate-400">Job Management</p>
+          <p className="text-[10px] text-slate-500 leading-none mt-0.5">Job Management</p>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
         {navSections.map(({ label, items }) => (
           <div key={label}>
-            <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-widest text-slate-500 uppercase select-none">
+            <p className="px-3 mb-1 text-[9px] font-bold tracking-widest text-slate-600 uppercase select-none">
               {label}
             </p>
-            <div className="space-y-0.5">
+            <div className="space-y-px">
               {items.map(({ href, label: itemLabel, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(href + "/");
                 return (
@@ -89,18 +93,13 @@ export function Sidebar() {
                     key={href}
                     href={href}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all group",
+                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-all group",
                       active
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                        ? "bg-violet-600 text-white shadow-sm"
+                        : "text-slate-400 hover:bg-white/5 hover:text-white"
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        "h-4 w-4 flex-shrink-0 transition-colors",
-                        active ? "text-white" : "text-slate-500 group-hover:text-slate-300"
-                      )}
-                    />
+                    <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", active ? "text-white" : "text-slate-500 group-hover:text-slate-300")} />
                     <span className="truncate">{itemLabel}</span>
                   </Link>
                 );
@@ -111,12 +110,12 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-700/40 p-3">
+      <div className="border-t border-white/5 p-2">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-slate-500 hover:bg-white/5 hover:text-white transition-all"
         >
-          <LogOut className="h-4 w-4 text-slate-500" />
+          <LogOut className="h-3.5 w-3.5" />
           Sign out
         </button>
       </div>

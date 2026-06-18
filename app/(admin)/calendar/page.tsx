@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { JOB_CATEGORIES, formatTime } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Loader2, Map, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Map, ExternalLink, List } from "lucide-react";
 import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
+
+const DayMap = dynamic(() => import("@/components/admin/day-map").then((m) => m.DayMap), {
+  ssr: false,
+  loading: () => <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-slate-400" /></div>,
+});
 
 interface Job {
   id: string;
@@ -16,9 +22,8 @@ interface Job {
   tenantName: string | null;
   unitNumber: string | null;
   property: { name: string; address: string; suburb: string | null } | null;
+  technician?: { name: string; color: string } | null;
 }
-
-const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -38,7 +43,7 @@ export default function CalendarPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [routeMode, setRouteMode] = useState(false);
+  const [panelTab, setPanelTab] = useState<"list" | "map" | "route">("list");
 
   useEffect(() => {
     const ym = `${year}-${String(month + 1).padStart(2, "0")}`;
@@ -51,13 +56,13 @@ export default function CalendarPage() {
   function prevMonth() {
     if (month === 0) { setYear((y) => y - 1); setMonth(11); }
     else setMonth((m) => m - 1);
-    setSelectedDay(null); setRouteMode(false);
+    setSelectedDay(null); setPanelTab("list");
   }
 
   function nextMonth() {
     if (month === 11) { setYear((y) => y + 1); setMonth(0); }
     else setMonth((m) => m + 1);
-    setSelectedDay(null); setRouteMode(false);
+    setSelectedDay(null); setPanelTab("list");
   }
 
   const daysInMonth = getDaysInMonth(year, month);
@@ -124,10 +129,10 @@ export default function CalendarPage() {
                 <div
                   key={day}
                   onClick={() => setSelectedDay(isSelected ? null : ds)}
-                  className={`min-h-[100px] border-b border-r border-slate-100 p-2 cursor-pointer transition-colors ${isSelected ? "bg-blue-50 border-blue-200" : "hover:bg-slate-50"} ${(i + firstDay) % 7 === 6 ? "border-r-0" : ""}`}
+                  className={`min-h-[100px] border-b border-r border-slate-100 p-2 cursor-pointer transition-colors ${isSelected ? "bg-violet-50 border-violet-200" : "hover:bg-slate-50"} ${(i + firstDay) % 7 === 6 ? "border-r-0" : ""}`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-blue-600 text-white" : isSelected ? "text-blue-700" : "text-slate-700"}`}>
+                    <span className={`text-sm font-semibold inline-flex h-6 w-6 items-center justify-center rounded-full ${isToday ? "bg-violet-600 text-white" : isSelected ? "text-violet-700" : "text-slate-700"}`}>
                       {day}
                     </span>
                     {dayJobs.length > 0 && (
@@ -167,58 +172,81 @@ export default function CalendarPage() {
 
 
       {/* Day detail panel */}
-      <div className="w-72 flex-shrink-0">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
+      <div className="w-80 flex-shrink-0">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-full flex flex-col">
           {!selectedDay ? (
             <div className="flex flex-col items-center justify-center h-64 text-slate-400 px-6 text-center">
-              <p className="text-sm">Click a day to see its jobs</p>
+              <Map className="h-8 w-8 text-slate-200 mb-3" />
+              <p className="text-sm font-medium text-slate-500">Click a day to see jobs & map</p>
             </div>
           ) : (
-            <div>
-              <div className="px-5 py-4 border-b border-slate-100">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-semibold text-slate-900 text-sm">
-                      {new Date(selectedDay + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">{selectedJobs.length} job{selectedJobs.length !== 1 ? "s" : ""}</p>
-                  </div>
-                  {selectedJobs.length >= 2 && (
-                    <button
-                      onClick={() => setRouteMode((r) => !r)}
-                      className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg border transition-colors flex-shrink-0 ${routeMode ? "bg-blue-600 text-white border-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
-                    >
-                      <Map className="h-3 w-3" /> Route
-                    </button>
-                  )}
-                </div>
+            <>
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-slate-100 flex-shrink-0">
+                <p className="font-semibold text-slate-900 text-sm">
+                  {new Date(selectedDay + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
+                </p>
+                <p className="text-xs text-slate-500 mt-0.5">{selectedJobs.length} job{selectedJobs.length !== 1 ? "s" : ""} scheduled</p>
               </div>
 
-              {!routeMode ? (
-                <div className="divide-y divide-slate-50 max-h-[calc(100vh-280px)] overflow-y-auto">
-                  {selectedJobs.length === 0 ? (
-                    <p className="px-5 py-6 text-sm text-slate-500 text-center">No jobs scheduled</p>
-                  ) : (
-                    selectedJobs
-                      .sort((a, b) => (a.scheduledTimeStart ?? "").localeCompare(b.scheduledTimeStart ?? ""))
-                      .map((job) => (
-                        <div key={job.id} className="px-4 py-3">
-                          <div className="flex items-center justify-between mb-1">
-                            {job.scheduledTimeStart && <span className="text-xs font-mono text-slate-500">{formatTime(job.scheduledTimeStart)}</span>}
-                            <StatusBadge status={job.status} />
-                          </div>
-                          <p className="text-sm font-semibold text-slate-900 leading-snug">{job.title}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{job.property?.name}</p>
-                          {job.tenantName && <p className="text-xs text-slate-400 mt-0.5">Tenant: {job.tenantName}{job.unitNumber ? ` · Unit ${job.unitNumber}` : ""}</p>}
-                          <div className="mt-2"><JobCategoryBadge category={job.jobCategory} /></div>
-                        </div>
-                      ))
-                  )}
+              {/* Tabs */}
+              {selectedJobs.length > 0 && (
+                <div className="flex border-b border-slate-100 flex-shrink-0">
+                  {[
+                    { id: "list" as const, label: "Jobs", icon: List },
+                    { id: "map" as const, label: "Map", icon: Map },
+                    { id: "route" as const, label: "Route", icon: ExternalLink },
+                  ].map(({ id, label, icon: Icon }) => (
+                    <button
+                      key={id}
+                      onClick={() => setPanelTab(id)}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2 ${panelTab === id ? "border-violet-600 text-violet-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </button>
+                  ))}
                 </div>
-              ) : (
-                <RoutePanel jobs={selectedJobs} />
               )}
-            </div>
+
+              {/* Tab content */}
+              <div className="flex-1 overflow-y-auto">
+                {panelTab === "list" || selectedJobs.length === 0 ? (
+                  <div className="divide-y divide-slate-50">
+                    {selectedJobs.length === 0 ? (
+                      <p className="px-5 py-8 text-sm text-slate-400 text-center">No jobs scheduled</p>
+                    ) : (
+                      [...selectedJobs]
+                        .sort((a, b) => (a.scheduledTimeStart ?? "").localeCompare(b.scheduledTimeStart ?? ""))
+                        .map((job) => (
+                          <div key={job.id} className="px-4 py-3">
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-xs font-mono text-slate-400">{formatTime(job.scheduledTimeStart) || "No time"}</span>
+                              <StatusBadge status={job.status} />
+                            </div>
+                            <p className="text-sm font-semibold text-slate-900 leading-snug">{job.title}</p>
+                            <p className="text-xs text-slate-500 mt-0.5">{job.property?.name}</p>
+                            {job.tenantName && (
+                              <p className="text-xs text-slate-400 mt-0.5">
+                                {job.tenantName}{job.unitNumber ? ` · Unit ${job.unitNumber}` : ""}
+                              </p>
+                            )}
+                            <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                              <JobCategoryBadge category={job.jobCategory} />
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                ) : panelTab === "map" ? (
+                  <div className="p-4">
+                    <DayMap jobs={selectedJobs.map((j) => ({ ...j, technician: j.technician ?? null }))} />
+                  </div>
+                ) : (
+                  <RoutePanel jobs={selectedJobs} />
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -234,22 +262,26 @@ function RoutePanel({ jobs }: { jobs: Job[] }) {
 
   const mapsUrl = addresses.length >= 2
     ? `https://www.google.com/maps/dir/${addresses.map(encodeURIComponent).join("/")}`
-    : null;
-
-  const embedUrl = MAPS_KEY && addresses.length >= 2
-    ? `https://www.google.com/maps/embed/v1/directions?key=${MAPS_KEY}&origin=${encodeURIComponent(addresses[0])}&destination=${encodeURIComponent(addresses[addresses.length - 1])}${addresses.length > 2 ? `&waypoints=${addresses.slice(1, -1).map(encodeURIComponent).join("|")}` : ""}&mode=driving`
+    : addresses.length === 1
+    ? `https://www.google.com/maps/search/?q=${encodeURIComponent(addresses[0])}`
     : null;
 
   return (
-    <div className="overflow-y-auto max-h-[calc(100vh-280px)]">
-      {/* Job stop list */}
+    <div>
       <div className="divide-y divide-slate-50">
         {sorted.map((job, i) => (
           <div key={job.id} className="px-4 py-3 flex items-start gap-3">
-            <div className="h-5 w-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</div>
+            <div
+              className="h-5 w-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5"
+              style={{ backgroundColor: (job as { technician?: { color: string } | null }).technician?.color ?? "#3b82f6" }}
+            >
+              {i + 1}
+            </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-slate-900 truncate">{job.title}</p>
-              {job.scheduledTimeStart && <p className="text-xs text-slate-500 font-mono">{formatTime(job.scheduledTimeStart)}</p>}
+              {job.scheduledTimeStart && (
+                <p className="text-xs text-slate-500 font-mono">{formatTime(job.scheduledTimeStart)}</p>
+              )}
               {job.property && (
                 <p className="text-xs text-slate-400 truncate mt-0.5">
                   {job.property.address}{job.property.suburb ? `, ${job.property.suburb}` : ""}
@@ -259,33 +291,16 @@ function RoutePanel({ jobs }: { jobs: Job[] }) {
           </div>
         ))}
       </div>
-
-      {/* Actions */}
-      <div className="px-4 py-3 border-t border-slate-100 space-y-2">
-        {mapsUrl && (
+      <div className="px-4 py-3 border-t border-slate-100">
+        {mapsUrl ? (
           <a href={mapsUrl} target="_blank" rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors">
-            <ExternalLink className="h-3.5 w-3.5" /> Open in Google Maps
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-violet-600 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-700 transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" /> Open route in Google Maps
           </a>
-        )}
-        {!MAPS_KEY && (
-          <p className="text-[10px] text-slate-400 text-center">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable the embedded map.</p>
+        ) : (
+          <p className="text-xs text-slate-400 text-center">No addresses available</p>
         )}
       </div>
-
-      {/* Embedded map */}
-      {embedUrl && (
-        <div className="px-4 pb-4">
-          <iframe
-            src={embedUrl}
-            className="w-full rounded-lg border border-slate-200"
-            height="240"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Route map"
-          />
-        </div>
-      )}
     </div>
   );
 }

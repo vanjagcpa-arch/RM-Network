@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { JOB_CATEGORIES, JOB_STATUSES } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Calendar, RefreshCw, LayoutTemplate } from "lucide-react";
+import { ArrowLeft, Sparkles, Calendar, RefreshCw, LayoutTemplate, Send, Building2, MapPin, User2 } from "lucide-react";
 import { Suspense } from "react";
 
 interface Property {
@@ -40,6 +40,8 @@ interface Recommendation {
   score: number;
   reason: string;
   jobCount: number;
+  buildingJobCount: number;
+  technicianJobCount: number;
 }
 
 function NewJobForm() {
@@ -53,6 +55,7 @@ function NewJobForm() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loadingRec, setLoadingRec] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sendBookingRequest, setSendBookingRequest] = useState(false);
   const skipAutoTitle = useRef(false);
   const [form, setForm] = useState({
     propertyId: defaultPropertyId,
@@ -98,11 +101,13 @@ function NewJobForm() {
   useEffect(() => {
     if (!form.propertyId) { setRecommendations([]); return; }
     setLoadingRec(true);
-    fetch(`/api/scheduling/recommendations?propertyId=${form.propertyId}&daysAhead=30`)
+    const params = new URLSearchParams({ propertyId: form.propertyId, daysAhead: "60" });
+    if (form.technicianId) params.set("technicianId", form.technicianId);
+    fetch(`/api/scheduling/recommendations?${params}`)
       .then((r) => r.json())
       .then((data) => setRecommendations(Array.isArray(data) ? data : []))
       .finally(() => setLoadingRec(false));
-  }, [form.propertyId]);
+  }, [form.propertyId, form.technicianId]);
 
   // Auto-fill title when category changes (skip once after template load)
   useEffect(() => {
@@ -125,8 +130,19 @@ function NewJobForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...rest, recurringIntervalMonths: isRecurring ? form.recurringIntervalMonths : null }),
     });
-    if (res.ok) router.push("/jobs");
-    else setSaving(false);
+    if (res.ok) {
+      const job = await res.json();
+      if (sendBookingRequest && form.tenantEmail) {
+        await fetch("/api/jobs/request-booking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobId: job.id }),
+        }).catch(() => {});
+      }
+      router.push("/jobs");
+    } else {
+      setSaving(false);
+    }
   }
 
   return (
@@ -145,7 +161,7 @@ function NewJobForm() {
               <div className="flex items-center gap-2">
                 <LayoutTemplate className="h-3.5 w-3.5 text-slate-400" />
                 <select onChange={(e) => loadTemplate(e.target.value)} defaultValue=""
-                  className="text-xs rounded-md border border-slate-200 bg-white px-2 py-1 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="text-xs rounded-md border border-slate-200 bg-white px-2 py-1 text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500">
                   <option value="" disabled>Load template…</option>
                   {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
@@ -157,7 +173,7 @@ function NewJobForm() {
             <div>
               <Label htmlFor="propertyId">Property *</Label>
               <select id="propertyId" required value={form.propertyId} onChange={(e) => setForm({ ...form, propertyId: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 <option value="">Select property…</option>
                 {properties.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
@@ -165,7 +181,7 @@ function NewJobForm() {
             <div>
               <Label htmlFor="jobCategory">Job type *</Label>
               <select id="jobCategory" required value={form.jobCategory} onChange={(e) => setForm({ ...form, jobCategory: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 <option value="">Select job type…</option>
                 {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
               </select>
@@ -180,14 +196,14 @@ function NewJobForm() {
           <div>
             <Label>Description</Label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder="Optional job description…"
-              className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Status</Label>
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 {(["pending", "confirmed", "in_progress"] as const).map((k) => (
                   <option key={k} value={k}>{JOB_STATUSES[k].label}</option>
                 ))}
@@ -196,7 +212,7 @@ function NewJobForm() {
             <div>
               <Label>Assign technician</Label>
               <select value={form.technicianId} onChange={(e) => setForm({ ...form, technicianId: e.target.value })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 <option value="">Unassigned</option>
                 {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
@@ -207,46 +223,57 @@ function NewJobForm() {
         {/* Smart scheduling */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <Sparkles className="h-4 w-4 text-blue-600" />
+            <Sparkles className="h-4 w-4 text-violet-600" />
             <h2 className="text-sm font-semibold text-slate-900">Smart Scheduling</h2>
           </div>
 
           {!form.propertyId ? (
-            <p className="text-sm text-slate-500">Select a property to see scheduling recommendations.</p>
+            <p className="text-sm text-slate-400">Select a property to see smart scheduling suggestions.</p>
           ) : loadingRec ? (
-            <p className="text-sm text-slate-500">Loading recommendations…</p>
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              <span className="h-3.5 w-3.5 rounded-full border-2 border-violet-300 border-t-violet-600 animate-spin" />
+              Finding the best days…
+            </div>
           ) : recommendations.length > 0 ? (
             <div>
-              <p className="text-sm text-slate-600 mb-3">
-                <span className="font-medium text-blue-700">Smart suggestion:</span> Schedule on a day when other jobs are already nearby to reduce driving.
-              </p>
+              <p className="text-xs text-slate-500 mb-3 font-medium uppercase tracking-wide">Recommended days — click to select</p>
               <div className="space-y-2">
                 {recommendations.map((rec) => {
                   const d = new Date(rec.date + "T00:00:00");
                   const label = d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+                  const isBuildingMatch = rec.buildingJobCount > 0;
+                  const isTechMatch = rec.technicianJobCount > 0;
+                  const selected = form.scheduledDate === rec.date;
                   return (
                     <button
                       key={rec.date}
                       type="button"
                       onClick={() => setForm((f) => ({ ...f, scheduledDate: rec.date }))}
-                      className={`w-full flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-all ${form.scheduledDate === rec.date ? "border-blue-500 bg-blue-50 shadow-sm" : "border-slate-200 hover:border-blue-300 hover:bg-blue-50/50"}`}
+                      className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all ${selected ? "border-violet-500 bg-violet-50 shadow-sm" : isBuildingMatch ? "border-emerald-200 bg-emerald-50/50 hover:border-emerald-400" : "border-slate-200 hover:border-violet-300 hover:bg-slate-50"}`}
                     >
-                      <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <Calendar className="h-4 w-4 text-blue-600" />
+                      <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 ${selected ? "bg-violet-600" : isBuildingMatch ? "bg-emerald-100" : "bg-slate-100"}`}>
+                        {isBuildingMatch
+                          ? <Building2 className={`h-4 w-4 ${selected ? "text-white" : "text-emerald-600"}`} />
+                          : <Calendar className={`h-4 w-4 ${selected ? "text-white" : "text-slate-500"}`} />
+                        }
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-slate-900">{label}</p>
-                        <p className="text-xs text-slate-500">{rec.reason} · {rec.jobCount} job{rec.jobCount !== 1 ? "s" : ""} already scheduled</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-slate-900">{label}</p>
+                          {isBuildingMatch && <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Same building</span>}
+                          {!isBuildingMatch && isTechMatch && <span className="text-[10px] font-semibold bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">Tech available</span>}
+                        </div>
+                        <p className="text-xs text-slate-500 truncate">{rec.reason} · {rec.jobCount} job{rec.jobCount !== 1 ? "s" : ""} that day</p>
                       </div>
-                      {form.scheduledDate === rec.date && <span className="text-xs text-blue-600 font-medium">Selected</span>}
+                      {selected && <span className="text-xs text-violet-600 font-semibold flex-shrink-0">✓ Selected</span>}
                     </button>
                   );
                 })}
               </div>
-              <p className="text-xs text-slate-400 mt-2">Or pick any date below.</p>
+              <p className="text-xs text-slate-400 mt-2.5">Or pick any date in the fields below.</p>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">No nearby jobs found in the next 30 days — pick any available date.</p>
+            <p className="text-sm text-slate-400">No other jobs scheduled in the next 60 days — pick any available date below.</p>
           )}
 
           <div className="grid grid-cols-3 gap-3">
@@ -269,13 +296,13 @@ function NewJobForm() {
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4 text-blue-600" />
+              <RefreshCw className="h-4 w-4 text-violet-600" />
               <h2 className="text-sm font-semibold text-slate-900">Recurring schedule</h2>
             </div>
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" checked={form.isRecurring}
                 onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600" />
+                className="h-4 w-4 rounded border-slate-300 text-violet-600" />
               <span className="text-sm text-slate-600">Enable</span>
             </label>
           </div>
@@ -284,7 +311,7 @@ function NewJobForm() {
               <Label>Repeat every</Label>
               <select value={form.recurringIntervalMonths}
                 onChange={(e) => setForm({ ...form, recurringIntervalMonths: Number(e.target.value) })}
-                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
                 <option value={1}>1 month</option>
                 <option value={3}>3 months</option>
                 <option value={6}>6 months</option>
@@ -298,14 +325,17 @@ function NewJobForm() {
 
         {/* Tenant details */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-3">Tenant / contact details</h2>
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <User2 className="h-4 w-4 text-violet-600" />
+            <h2 className="text-sm font-semibold text-slate-900">Tenant / contact details</h2>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Tenant name</Label>
               <Input value={form.tenantName} onChange={(e) => setForm({ ...form, tenantName: e.target.value })} placeholder="Full name" className="mt-1" />
             </div>
             <div>
-              <Label>Unit / apartment</Label>
+              <Label>Unit / apartment number</Label>
               <Input value={form.unitNumber} onChange={(e) => setForm({ ...form, unitNumber: e.target.value })} placeholder="e.g. 12B" className="mt-1" />
             </div>
             <div>
@@ -320,13 +350,51 @@ function NewJobForm() {
           <div>
             <Label>Internal notes</Label>
             <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2}
-              className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="mt-1 flex w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3">
+        {/* Tenant booking request */}
+        {form.tenantEmail && (
+          <div className={`rounded-xl border p-5 transition-colors ${sendBookingRequest ? "bg-violet-50 border-violet-200" : "bg-white border-slate-200"}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className={`mt-0.5 h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${sendBookingRequest ? "bg-violet-600" : "bg-slate-100"}`}>
+                  <Send className={`h-4 w-4 ${sendBookingRequest ? "text-white" : "text-slate-500"}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Send booking request to tenant</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Email {form.tenantEmail} a link to choose their own appointment time. The link expires in 7 days.
+                  </p>
+                </div>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer select-none flex-shrink-0">
+                <input
+                  type="checkbox"
+                  checked={sendBookingRequest}
+                  onChange={(e) => {
+                    setSendBookingRequest(e.target.checked);
+                    if (e.target.checked) setForm((f) => ({ ...f, scheduledDate: "", scheduledTimeStart: "", scheduledTimeEnd: "" }));
+                  }}
+                  className="h-4 w-4 rounded border-slate-300 text-violet-600"
+                />
+                <span className="text-sm font-medium text-slate-700">Enable</span>
+              </label>
+            </div>
+            {sendBookingRequest && (
+              <p className="mt-3 text-xs text-violet-700 bg-violet-100 rounded-lg px-3 py-2">
+                The scheduled date is optional — the tenant will choose a time via the booking link. The job will be created with status &quot;Awaiting Tenant&quot;.
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-end gap-3 pb-8">
           <Link href="/jobs"><Button type="button" variant="outline">Cancel</Button></Link>
-          <Button type="submit" loading={saving}>Create job</Button>
+          <Button type="submit" loading={saving}>
+            {sendBookingRequest ? "Create job & send booking request" : "Create job"}
+          </Button>
         </div>
       </form>
     </div>
