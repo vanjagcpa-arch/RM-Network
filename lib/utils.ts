@@ -41,9 +41,9 @@ export const JOB_CATEGORIES = {
 export const JOB_STATUSES = {
   pending: {
     label: "Awaiting Tenant",
-    color: "bg-amber-100 text-amber-700",
-    dot: "bg-amber-400",
-    solid: "bg-amber-500",
+    color: "bg-orange-100 text-orange-700",
+    dot: "bg-orange-500",
+    solid: "bg-orange-500",
   },
   confirmed: {
     label: "Booked",
@@ -77,7 +77,7 @@ export type JobStatus = keyof typeof JOB_STATUSES;
 export type ChipColor = "amber" | "blue" | "emerald" | "green" | "red" | "orange" | "purple" | "slate";
 
 export const JOB_STATUS_CHIP_COLOR: Record<string, ChipColor> = {
-  pending:     "amber",
+  pending:     "orange",
   confirmed:   "blue",
   in_progress: "purple",
   completed:   "emerald",
