@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { JOB_CATEGORIES, JOB_STATUSES, formatTime } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { JOB_CATEGORIES, formatTime } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, Loader2, Map, ExternalLink } from "lucide-react";
 import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
 
@@ -15,8 +15,10 @@ interface Job {
   scheduledTimeStart: string | null;
   tenantName: string | null;
   unitNumber: string | null;
-  property: { name: string } | null;
+  property: { name: string; address: string; suburb: string | null } | null;
 }
+
+const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -36,6 +38,7 @@ export default function CalendarPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [routeMode, setRouteMode] = useState(false);
 
   useEffect(() => {
     const ym = `${year}-${String(month + 1).padStart(2, "0")}`;
@@ -48,13 +51,13 @@ export default function CalendarPage() {
   function prevMonth() {
     if (month === 0) { setYear((y) => y - 1); setMonth(11); }
     else setMonth((m) => m - 1);
-    setSelectedDay(null);
+    setSelectedDay(null); setRouteMode(false);
   }
 
   function nextMonth() {
     if (month === 11) { setYear((y) => y + 1); setMonth(0); }
     else setMonth((m) => m + 1);
-    setSelectedDay(null);
+    setSelectedDay(null); setRouteMode(false);
   }
 
   const daysInMonth = getDaysInMonth(year, month);
@@ -162,6 +165,7 @@ export default function CalendarPage() {
         </div>
       </div>
 
+
       {/* Day detail panel */}
       <div className="w-72 flex-shrink-0">
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm h-full">
@@ -172,37 +176,116 @@ export default function CalendarPage() {
           ) : (
             <div>
               <div className="px-5 py-4 border-b border-slate-100">
-                <p className="font-semibold text-slate-900 text-sm">
-                  {new Date(selectedDay + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
-                </p>
-                <p className="text-xs text-slate-500 mt-0.5">{selectedJobs.length} job{selectedJobs.length !== 1 ? "s" : ""}</p>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-slate-900 text-sm">
+                      {new Date(selectedDay + "T00:00:00").toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">{selectedJobs.length} job{selectedJobs.length !== 1 ? "s" : ""}</p>
+                  </div>
+                  {selectedJobs.length >= 2 && (
+                    <button
+                      onClick={() => setRouteMode((r) => !r)}
+                      className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg border transition-colors flex-shrink-0 ${routeMode ? "bg-blue-600 text-white border-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                    >
+                      <Map className="h-3 w-3" /> Route
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="divide-y divide-slate-50 max-h-[calc(100vh-280px)] overflow-y-auto">
-                {selectedJobs.length === 0 ? (
-                  <p className="px-5 py-6 text-sm text-slate-500 text-center">No jobs scheduled</p>
-                ) : (
-                  selectedJobs
-                    .sort((a, b) => (a.scheduledTimeStart ?? "").localeCompare(b.scheduledTimeStart ?? ""))
-                    .map((job) => (
-                      <div key={job.id} className="px-4 py-3">
-                        <div className="flex items-center justify-between mb-1">
-                          {job.scheduledTimeStart && <span className="text-xs font-mono text-slate-500">{formatTime(job.scheduledTimeStart)}</span>}
-                          <StatusBadge status={job.status} />
+
+              {!routeMode ? (
+                <div className="divide-y divide-slate-50 max-h-[calc(100vh-280px)] overflow-y-auto">
+                  {selectedJobs.length === 0 ? (
+                    <p className="px-5 py-6 text-sm text-slate-500 text-center">No jobs scheduled</p>
+                  ) : (
+                    selectedJobs
+                      .sort((a, b) => (a.scheduledTimeStart ?? "").localeCompare(b.scheduledTimeStart ?? ""))
+                      .map((job) => (
+                        <div key={job.id} className="px-4 py-3">
+                          <div className="flex items-center justify-between mb-1">
+                            {job.scheduledTimeStart && <span className="text-xs font-mono text-slate-500">{formatTime(job.scheduledTimeStart)}</span>}
+                            <StatusBadge status={job.status} />
+                          </div>
+                          <p className="text-sm font-semibold text-slate-900 leading-snug">{job.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{job.property?.name}</p>
+                          {job.tenantName && <p className="text-xs text-slate-400 mt-0.5">Tenant: {job.tenantName}{job.unitNumber ? ` · Unit ${job.unitNumber}` : ""}</p>}
+                          <div className="mt-2"><JobCategoryBadge category={job.jobCategory} /></div>
                         </div>
-                        <p className="text-sm font-semibold text-slate-900 leading-snug">{job.title}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{job.property?.name}</p>
-                        {job.tenantName && <p className="text-xs text-slate-400 mt-0.5">Tenant: {job.tenantName}{job.unitNumber ? ` · Unit ${job.unitNumber}` : ""}</p>}
-                        <div className="mt-2">
-                          <JobCategoryBadge category={job.jobCategory} />
-                        </div>
-                      </div>
-                    ))
-                )}
-              </div>
+                      ))
+                  )}
+                </div>
+              ) : (
+                <RoutePanel jobs={selectedJobs} />
+              )}
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function RoutePanel({ jobs }: { jobs: Job[] }) {
+  const sorted = [...jobs].sort((a, b) => (a.scheduledTimeStart ?? "").localeCompare(b.scheduledTimeStart ?? ""));
+  const addresses = sorted
+    .map((j) => j.property ? `${j.property.address}${j.property.suburb ? `, ${j.property.suburb}` : ""}` : null)
+    .filter(Boolean) as string[];
+
+  const mapsUrl = addresses.length >= 2
+    ? `https://www.google.com/maps/dir/${addresses.map(encodeURIComponent).join("/")}`
+    : null;
+
+  const embedUrl = MAPS_KEY && addresses.length >= 2
+    ? `https://www.google.com/maps/embed/v1/directions?key=${MAPS_KEY}&origin=${encodeURIComponent(addresses[0])}&destination=${encodeURIComponent(addresses[addresses.length - 1])}${addresses.length > 2 ? `&waypoints=${addresses.slice(1, -1).map(encodeURIComponent).join("|")}` : ""}&mode=driving`
+    : null;
+
+  return (
+    <div className="overflow-y-auto max-h-[calc(100vh-280px)]">
+      {/* Job stop list */}
+      <div className="divide-y divide-slate-50">
+        {sorted.map((job, i) => (
+          <div key={job.id} className="px-4 py-3 flex items-start gap-3">
+            <div className="h-5 w-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-slate-900 truncate">{job.title}</p>
+              {job.scheduledTimeStart && <p className="text-xs text-slate-500 font-mono">{formatTime(job.scheduledTimeStart)}</p>}
+              {job.property && (
+                <p className="text-xs text-slate-400 truncate mt-0.5">
+                  {job.property.address}{job.property.suburb ? `, ${job.property.suburb}` : ""}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <div className="px-4 py-3 border-t border-slate-100 space-y-2">
+        {mapsUrl && (
+          <a href={mapsUrl} target="_blank" rel="noreferrer"
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" /> Open in Google Maps
+          </a>
+        )}
+        {!MAPS_KEY && (
+          <p className="text-[10px] text-slate-400 text-center">Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable the embedded map.</p>
+        )}
+      </div>
+
+      {/* Embedded map */}
+      {embedUrl && (
+        <div className="px-4 pb-4">
+          <iframe
+            src={embedUrl}
+            className="w-full rounded-lg border border-slate-200"
+            height="240"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Route map"
+          />
+        </div>
+      )}
     </div>
   );
 }

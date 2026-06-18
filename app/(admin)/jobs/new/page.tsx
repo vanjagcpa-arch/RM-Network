@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { JOB_CATEGORIES } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Calendar, RefreshCw } from "lucide-react";
+import { ArrowLeft, Sparkles, Calendar, RefreshCw, LayoutTemplate } from "lucide-react";
 import { Suspense } from "react";
 
 interface Property {
@@ -26,6 +26,15 @@ interface Technician {
   isActive: boolean;
 }
 
+interface JobTemplate {
+  id: string;
+  name: string;
+  jobCategory: string;
+  titleTemplate: string;
+  description: string | null;
+  recurringIntervalMonths: number | null;
+}
+
 interface Recommendation {
   date: string;
   score: number;
@@ -40,9 +49,11 @@ function NewJobForm() {
 
   const [properties, setProperties] = useState<Property[]>([]);
   const [technicians, setTechnicians] = useState<Technician[]>([]);
+  const [templates, setTemplates] = useState<JobTemplate[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loadingRec, setLoadingRec] = useState(false);
   const [saving, setSaving] = useState(false);
+  const skipAutoTitle = useRef(false);
   const [form, setForm] = useState({
     propertyId: defaultPropertyId,
     jobCategory: "",
@@ -65,7 +76,24 @@ function NewJobForm() {
   useEffect(() => {
     fetch("/api/properties").then((r) => r.json()).then(setProperties);
     fetch("/api/technicians").then((r) => r.json()).then((data: Technician[]) => setTechnicians(data.filter((t) => t.isActive)));
+    fetch("/api/templates").then((r) => r.json()).then(setTemplates);
   }, []);
+
+  function loadTemplate(tplId: string) {
+    const tpl = templates.find((t) => t.id === tplId);
+    if (!tpl) return;
+    const prop = properties.find((p) => p.id === form.propertyId);
+    const title = tpl.titleTemplate.replace("{property}", prop?.name ?? "{property}");
+    skipAutoTitle.current = true;
+    setForm((f) => ({
+      ...f,
+      jobCategory: tpl.jobCategory,
+      title,
+      description: tpl.description ?? "",
+      isRecurring: !!tpl.recurringIntervalMonths,
+      recurringIntervalMonths: tpl.recurringIntervalMonths ?? 12,
+    }));
+  }
 
   useEffect(() => {
     if (!form.propertyId) { setRecommendations([]); return; }
@@ -76,8 +104,9 @@ function NewJobForm() {
       .finally(() => setLoadingRec(false));
   }, [form.propertyId]);
 
-  // Auto-fill title when category changes
+  // Auto-fill title when category changes (skip once after template load)
   useEffect(() => {
+    if (skipAutoTitle.current) { skipAutoTitle.current = false; return; }
     if (form.jobCategory && form.propertyId) {
       const prop = properties.find((p) => p.id === form.propertyId);
       const cat = JOB_CATEGORIES[form.jobCategory as keyof typeof JOB_CATEGORIES];
@@ -110,7 +139,19 @@ function NewJobForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Core details */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-3">Job details</h2>
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h2 className="text-sm font-semibold text-slate-900">Job details</h2>
+            {templates.length > 0 && (
+              <div className="flex items-center gap-2">
+                <LayoutTemplate className="h-3.5 w-3.5 text-slate-400" />
+                <select onChange={(e) => loadTemplate(e.target.value)} defaultValue=""
+                  className="text-xs rounded-md border border-slate-200 bg-white px-2 py-1 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="" disabled>Load template…</option>
+                  {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { bookingLinks, jobs, properties } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
       unitNumber: unitNumber ?? null,
       notes: notes ?? null,
       bookingLinkId: bl.id,
+      rescheduleToken: tenantEmail ? nanoid(21) : null,
     })
     .returning();
 

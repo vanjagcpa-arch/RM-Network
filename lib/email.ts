@@ -48,10 +48,11 @@ function buildIcs(
 function buildHtml(
   job: {
     title: string; scheduledDate: string; scheduledTimeStart?: string | null;
-    tenantName?: string | null; unitNumber?: string | null;
+    tenantName?: string | null; unitNumber?: string | null; rescheduleToken?: string | null;
   },
   property: { name: string; address: string; suburb?: string | null }
 ): string {
+  const { rescheduleToken } = job;
   const [y, mo, d] = job.scheduledDate.split("-").map(Number);
   const dateLabel = new Date(y, mo - 1, d).toLocaleDateString("en-AU", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -78,7 +79,10 @@ function buildHtml(
       <tr><td style="padding:5px 0;color:#64748b">Time</td><td style="padding:5px 0">${timeLabel}</td></tr>
     </table>
   </div>
-  <p style="font-size:14px;color:#64748b">If you need to reschedule, please contact us directly.</p>
+  ${rescheduleToken && process.env.NEXT_PUBLIC_APP_URL
+    ? `<div style="text-align:center;margin:20px 0"><a href="${process.env.NEXT_PUBLIC_APP_URL}/reschedule/${rescheduleToken}" style="display:inline-block;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:10px 20px;font-size:14px;color:#475569;text-decoration:none;font-weight:500">Reschedule appointment →</a></div>`
+    : `<p style="font-size:14px;color:#64748b">If you need to reschedule, please contact us directly.</p>`
+  }
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
   <p style="font-size:12px;color:#94a3b8;margin:0">This is an automated message from RM Scheduler.</p>
 </body></html>`;
@@ -89,6 +93,7 @@ export async function sendJobConfirmationEmail(
     id: string; title: string; description?: string | null;
     tenantEmail: string; tenantName?: string | null; unitNumber?: string | null;
     scheduledDate: string; scheduledTimeStart?: string | null; scheduledTimeEnd?: string | null;
+    rescheduleToken?: string | null;
   },
   property: { name: string; address: string; suburb?: string | null }
 ): Promise<void> {

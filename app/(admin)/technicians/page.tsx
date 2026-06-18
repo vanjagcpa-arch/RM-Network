@@ -31,6 +31,7 @@ const emptyForm = {
 
 export default function TechniciansPage() {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
+  const [workload, setWorkload] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Technician | null>(null);
@@ -38,8 +39,18 @@ export default function TechniciansPage() {
   const [form, setForm] = useState(emptyForm);
 
   async function load() {
-    const res = await fetch("/api/technicians");
-    setTechnicians(await res.json());
+    const now = new Date();
+    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const [techRes, jobRes] = await Promise.all([
+      fetch("/api/technicians").then((r) => r.json()),
+      fetch(`/api/jobs?month=${month}`).then((r) => r.json()),
+    ]);
+    setTechnicians(techRes);
+    const counts: Record<string, number> = {};
+    for (const j of (jobRes as { technicianId: string | null }[])) {
+      if (j.technicianId) counts[j.technicianId] = (counts[j.technicianId] ?? 0) + 1;
+    }
+    setWorkload(counts);
     setLoading(false);
   }
 
@@ -121,6 +132,30 @@ export default function TechniciansPage() {
         </div>
         <Button onClick={openNew}><Plus className="h-4 w-4" /> Add Technician</Button>
       </div>
+
+      {/* Workload chart */}
+      {!loading && technicians.length > 0 && Object.keys(workload).length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+          <h2 className="text-sm font-semibold text-slate-900 mb-4">Workload this month</h2>
+          <div className="space-y-2.5">
+            {(() => {
+              const maxCount = Math.max(...Object.values(workload), 1);
+              return technicians.filter((t) => workload[t.id]).sort((a, b) => (workload[b.id] ?? 0) - (workload[a.id] ?? 0)).map((t) => {
+                const count = workload[t.id] ?? 0;
+                return (
+                  <div key={t.id} className="flex items-center gap-3">
+                    <div className="w-24 text-xs font-medium text-slate-700 truncate flex-shrink-0">{t.name.split(" ")[0]}</div>
+                    <div className="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${(count / maxCount) * 100}%`, backgroundColor: t.color }} />
+                    </div>
+                    <div className="w-8 text-right text-xs font-semibold text-slate-600">{count}</div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>
