@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   LayoutTemplate,
   Home,
+  Users,
+  Inbox,
 } from "lucide-react";
 
 const navSections = [
@@ -30,6 +32,7 @@ const navSections = [
     label: "OPERATIONS",
     items: [
       { href: "/jobs", label: "Jobs", icon: ClipboardList },
+      { href: "/maintenance-requests", label: "Maintenance Requests", icon: Inbox },
       { href: "/buildings", label: "Buildings", icon: Building2 },
       { href: "/properties", label: "Units / Properties", icon: Home },
     ],
@@ -38,6 +41,7 @@ const navSections = [
     label: "TEAM",
     items: [
       { href: "/technicians", label: "Technicians", icon: HardHat },
+      { href: "/agents", label: "Agents", icon: Users },
       { href: "/templates", label: "Templates", icon: LayoutTemplate },
       { href: "/compliance", label: "Compliance", icon: ShieldCheck },
     ],

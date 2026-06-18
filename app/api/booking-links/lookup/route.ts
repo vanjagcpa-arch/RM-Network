@@ -30,6 +30,8 @@ export async function GET(req: NextRequest) {
     jobCategory: bl.jobCategory,
     label: bl.label,
     allowedWeekdays: bl.allowedWeekdays ? JSON.parse(bl.allowedWeekdays) : null,
+    allowedTimeStart: bl.allowedTimeStart ?? null,
+    allowedTimeEnd: bl.allowedTimeEnd ?? null,
     maxBookings: bl.maxBookings,
     currentBookings: bl.currentBookings,
   });

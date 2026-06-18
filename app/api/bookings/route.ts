@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { bookingLinks, jobs, properties } from "@/db/schema";
+import { bookingLinks, jobs, properties, maintenanceRequests } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
@@ -69,6 +69,12 @@ export async function POST(req: NextRequest) {
     .update(bookingLinks)
     .set({ currentBookings: bl.currentBookings + 1 })
     .where(eq(bookingLinks.id, bl.id));
+
+  // Mark the originating maintenance request as booked
+  await db
+    .update(maintenanceRequests)
+    .set({ status: "booked", updatedAt: new Date() })
+    .where(eq(maintenanceRequests.bookingLinkId, bl.id));
 
   return NextResponse.json({ ok: true, jobId: job.id }, { status: 201 });
 }
