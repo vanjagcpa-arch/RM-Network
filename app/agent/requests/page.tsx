@@ -147,7 +147,9 @@ export default function AgentRequestsPage() {
   useEffect(() => {
     fetch("/api/agent/requests")
       .then((r) => r.json())
-      .then((data) => { setRequests(Array.isArray(data) ? data : []); setLoading(false); });
+      .then((data) => setRequests(Array.isArray(data) ? data : []))
+      .catch(() => setRequests([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = requests.filter((r) => {

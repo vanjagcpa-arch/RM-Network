@@ -63,12 +63,14 @@ export default function AgentPropertyDetailPage() {
     Promise.all([
       fetch("/api/agent/properties").then((r) => r.json()),
       fetch(`/api/agent/requests?propertyId=${id}`).then((r) => r.json()),
-    ]).then(([props, reqs]) => {
-      const prop = Array.isArray(props) ? props.find((p: Property) => p.id === id) : null;
-      setProperty(prop ?? null);
-      setRequests(Array.isArray(reqs) ? reqs : []);
-      setLoading(false);
-    });
+    ])
+      .then(([props, reqs]) => {
+        const prop = Array.isArray(props) ? props.find((p: Property) => p.id === id) : null;
+        setProperty(prop ?? null);
+        setRequests(Array.isArray(reqs) ? reqs : []);
+      })
+      .catch(() => { setProperty(null); setRequests([]); })
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => { loadData(); }, [id]);

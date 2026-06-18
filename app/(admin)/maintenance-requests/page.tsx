@@ -285,7 +285,9 @@ export default function MaintenanceRequestsPage() {
     setLoading(true);
     fetch("/api/admin/maintenance-requests")
       .then((r) => r.json())
-      .then((data) => { setRequests(Array.isArray(data) ? data : []); setLoading(false); });
+      .then((data) => setRequests(Array.isArray(data) ? data : []))
+      .catch(() => setRequests([]))
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => { load(); }, []);

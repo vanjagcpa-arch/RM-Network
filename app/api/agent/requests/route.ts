@@ -11,26 +11,31 @@ export async function GET(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const url = new URL(req.url);
-  const propertyId = url.searchParams.get("propertyId");
+  try {
+    const url = new URL(req.url);
+    const propertyId = url.searchParams.get("propertyId");
 
-  const conditions = [eq(maintenanceRequests.agentId, session.userId)];
-  if (propertyId) conditions.push(eq(maintenanceRequests.propertyId, propertyId));
+    const conditions = [eq(maintenanceRequests.agentId, session.userId)];
+    if (propertyId) conditions.push(eq(maintenanceRequests.propertyId, propertyId));
 
-  const rows = await db
-    .select({ request: maintenanceRequests, property: properties })
-    .from(maintenanceRequests)
-    .leftJoin(properties, eq(maintenanceRequests.propertyId, properties.id))
-    .where(and(...conditions))
-    .orderBy(desc(maintenanceRequests.createdAt));
+    const rows = await db
+      .select({ request: maintenanceRequests, property: properties })
+      .from(maintenanceRequests)
+      .leftJoin(properties, eq(maintenanceRequests.propertyId, properties.id))
+      .where(and(...conditions))
+      .orderBy(desc(maintenanceRequests.createdAt));
 
-  return NextResponse.json(
-    rows.map((r) => ({
-      ...r.request,
-      propertyName: r.property?.name ?? null,
-      propertyAddress: r.property?.address ?? null,
-    }))
-  );
+    return NextResponse.json(
+      rows.map((r) => ({
+        ...r.request,
+        propertyName: r.property?.name ?? null,
+        propertyAddress: r.property?.address ?? null,
+      }))
+    );
+  } catch (err) {
+    console.error("GET /api/agent/requests", err);
+    return NextResponse.json({ error: "Failed to load requests" }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
