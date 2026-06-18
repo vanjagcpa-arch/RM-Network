@@ -31,6 +31,18 @@ export const properties = pgTable("properties", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const technicians = pgTable("technicians", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 20 }),
+  specialties: text("specialties"),
+  color: varchar("color", { length: 20 }).notNull().default("#3b82f6"),
+  isActive: boolean("is_active").notNull().default(true),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const jobTypeCategories = [
   "smoke_alarm",
   "test_and_tag",
@@ -46,6 +58,7 @@ export const jobs = pgTable("jobs", {
   propertyId: uuid("property_id")
     .notNull()
     .references(() => properties.id),
+  technicianId: uuid("technician_id").references(() => technicians.id),
   jobCategory: varchar("job_category", { length: 50 }).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
@@ -61,6 +74,8 @@ export const jobs = pgTable("jobs", {
   ascoraJobId: varchar("ascora_job_id", { length: 50 }),
   ascoraExportedAt: timestamp("ascora_exported_at"),
   bookingLinkId: uuid("booking_link_id"),
+  recurringIntervalMonths: integer("recurring_interval_months"),
+  parentJobId: uuid("parent_job_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -83,8 +98,10 @@ export const bookingLinks = pgTable("booking_links", {
 
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type Property = typeof properties.$inferSelect;
+export type Technician = typeof technicians.$inferSelect;
 export type Job = typeof jobs.$inferSelect;
 export type BookingLink = typeof bookingLinks.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
 export type NewProperty = typeof properties.$inferInsert;
+export type NewTechnician = typeof technicians.$inferInsert;
 export type NewBookingLink = typeof bookingLinks.$inferInsert;

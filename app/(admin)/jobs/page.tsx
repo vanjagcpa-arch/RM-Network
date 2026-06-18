@@ -6,10 +6,17 @@ import { JobCategoryBadge } from "@/components/admin/job-category-badge";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { formatDate, formatTime, JOB_STATUSES, JOB_CATEGORIES } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, Filter, ClipboardList, Calendar, Building2, Loader2, Download, ExternalLink } from "lucide-react";
+import { Plus, Search, ClipboardList, Calendar, Building2, Loader2, Download, ExternalLink, HardHat } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+
+interface Technician {
+  id: string;
+  name: string;
+  color: string;
+  isActive: boolean;
+}
 
 interface Job {
   id: string;
@@ -18,25 +25,30 @@ interface Job {
   status: string;
   scheduledDate: string | null;
   scheduledTimeStart: string | null;
+  technicianId: string | null;
   tenantName: string | null;
   unitNumber: string | null;
   notes: string | null;
   property: { id: string; name: string; address: string; suburb: string | null } | null;
+  technician: { id: string; name: string; color: string } | null;
 }
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [filterTechnician, setFilterTechnician] = useState("");
   const [showEdit, setShowEdit] = useState<Job | null>(null);
   const [saving, setSaving] = useState(false);
-  const [editForm, setEditForm] = useState({ status: "", scheduledDate: "", scheduledTimeStart: "", scheduledTimeEnd: "", notes: "" });
+  const [editForm, setEditForm] = useState({ status: "", scheduledDate: "", scheduledTimeStart: "", scheduledTimeEnd: "", notes: "", technicianId: "" });
 
   async function load() {
-    const res = await fetch("/api/jobs");
-    setJobs(await res.json());
+    const [jobsRes, techRes] = await Promise.all([fetch("/api/jobs"), fetch("/api/technicians")]);
+    setJobs(await jobsRes.json());
+    setTechnicians(await techRes.json());
     setLoading(false);
   }
 
@@ -49,6 +61,7 @@ export default function JobsPage() {
       scheduledTimeStart: job.scheduledTimeStart ?? "",
       scheduledTimeEnd: "",
       notes: job.notes ?? "",
+      technicianId: job.technicianId ?? "",
     });
     setShowEdit(job);
   }
@@ -76,6 +89,7 @@ export default function JobsPage() {
   const filtered = jobs.filter((j) => {
     if (filterStatus && j.status !== filterStatus) return false;
     if (filterCategory && j.jobCategory !== filterCategory) return false;
+    if (filterTechnician && j.technicianId !== filterTechnician) return false;
     if (search) {
       const q = search.toLowerCase();
       return j.title.toLowerCase().includes(q) || (j.property?.name.toLowerCase() ?? "").includes(q) || (j.tenantName?.toLowerCase() ?? "").includes(q);
@@ -132,8 +146,13 @@ export default function JobsPage() {
           <option value="">All job types</option>
           {Object.entries(JOB_CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        {(filterStatus || filterCategory || search) && (
-          <button onClick={() => { setFilterStatus(""); setFilterCategory(""); setSearch(""); }} className="text-sm text-slate-500 hover:text-slate-900">
+        <select value={filterTechnician} onChange={(e) => setFilterTechnician(e.target.value)}
+          className="py-2 px-3 text-sm rounded-lg border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">All technicians</option>
+          {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+        </select>
+        {(filterStatus || filterCategory || filterTechnician || search) && (
+          <button onClick={() => { setFilterStatus(""); setFilterCategory(""); setFilterTechnician(""); setSearch(""); }} className="text-sm text-slate-500 hover:text-slate-900">
             Clear filters
           </button>
         )}
@@ -169,6 +188,11 @@ export default function JobsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  {job.technician && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5 text-white" style={{ backgroundColor: job.technician.color }}>
+                      <HardHat className="h-3 w-3" />{job.technician.name.split(" ")[0]}
+                    </span>
+                  )}
                   <JobCategoryBadge category={job.jobCategory} />
                   <StatusBadge status={job.status} />
                   <button onClick={() => openEdit(job)}
@@ -210,6 +234,14 @@ export default function JobsPage() {
                   <Label>Start time</Label>
                   <Input type="time" value={editForm.scheduledTimeStart} onChange={(e) => setEditForm({ ...editForm, scheduledTimeStart: e.target.value })} className="mt-1" />
                 </div>
+              </div>
+              <div>
+                <Label>Assign technician</Label>
+                <select value={editForm.technicianId} onChange={(e) => setEditForm({ ...editForm, technicianId: e.target.value })}
+                  className="mt-1 flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Unassigned</option>
+                  {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
               </div>
               <div>
                 <Label>Notes</Label>
