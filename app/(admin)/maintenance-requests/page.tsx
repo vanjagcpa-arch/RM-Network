@@ -25,11 +25,11 @@ interface Request {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-500" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
-  rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
+  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
+  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
+  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
 };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -252,7 +252,7 @@ export default function MaintenanceRequestsPage() {
           <p className="text-slate-500 text-sm mt-1">Review and approve requests submitted by your agents</p>
         </div>
         {pendingCount > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 text-sm font-semibold text-amber-700">
+          <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
             {pendingCount} pending review
           </span>
@@ -305,8 +305,7 @@ export default function MaintenanceRequestsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-3 mb-1">
                       <p className="font-semibold text-slate-900 text-sm">{r.title}</p>
-                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium flex-shrink-0 ${s.color}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
                         {s.label}
                       </span>
                     </div>

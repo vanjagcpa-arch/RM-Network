@@ -19,11 +19,11 @@ interface Request {
   rejectionReason: string | null;
 }
 
-const STATUS_STYLES: Record<string, { label: string; color: string; dot: string }> = {
-  pending: { label: "Awaiting review", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400" },
-  sent: { label: "Booking link sent", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-500" },
-  booked: { label: "Booked by tenant", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
-  rejected: { label: "Not approved", color: "bg-red-50 text-red-700 border-red-200", dot: "bg-red-400" },
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  pending: { label: "Awaiting review", color: "bg-amber-100 text-amber-700" },
+  sent: { label: "Booking link sent", color: "bg-blue-100 text-blue-700" },
+  booked: { label: "Booked by tenant", color: "bg-emerald-100 text-emerald-700" },
+  rejected: { label: "Not approved", color: "bg-red-100 text-red-700" },
 };
 
 const ALL_STATUSES = [
@@ -114,8 +114,7 @@ export default function AgentRequestsPage() {
                         </div>
                       )}
                     </div>
-                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${s.color}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium flex-shrink-0 ${s.color}`}>
                       {s.label}
                     </span>
                   </div>
