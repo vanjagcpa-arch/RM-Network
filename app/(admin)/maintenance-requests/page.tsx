@@ -23,6 +23,7 @@ interface Request {
   unitNumber: string | null;
   notes: string | null;
   rejectionReason: string | null;
+  submittedByAdminName: string | null;
   createdAt: string;
 }
 
@@ -465,6 +466,11 @@ export default function MaintenanceRequestsPage() {
                       <td className="px-4 py-3.5 hidden lg:table-cell">
                         <p className="text-slate-700">{r.agentName ?? "—"}</p>
                         {r.agencyName && <p className="text-xs text-slate-400">{r.agencyName}</p>}
+                        {r.submittedByAdminName && (
+                          <span className="inline-flex items-center mt-1 rounded-[6px] bg-sky-50 border border-sky-200 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
+                            via admin · {r.submittedByAdminName}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell text-slate-500 text-xs">
                         {new Date(r.createdAt).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}

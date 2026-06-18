@@ -161,6 +161,7 @@ export const maintenanceRequests = pgTable("maintenance_requests", {
   bookingLinkId: uuid("booking_link_id").references(() => bookingLinks.id),
   rejectionReason: text("rejection_reason"),
   notes: text("notes"),
+  submittedByAdminName: varchar("submitted_by_admin_name", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

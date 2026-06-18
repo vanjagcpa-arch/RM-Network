@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
       propertyName: r.property?.name ?? null,
       propertyAddress: r.property?.address ?? null,
       propertySuburb: r.property?.suburb ?? null,
+      submittedByAdminName: r.request.submittedByAdminName ?? null,
     }))
   );
 }
